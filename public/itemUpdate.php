@@ -57,15 +57,38 @@ function ciniki_library_itemUpdate(&$ciniki) {
         return $rc;
     }   
 
-	if( isset($args['title']) ) {
-		$args['permalink'] = preg_replace('/ /', '-', preg_replace('/[^a-z0-9 ]/', '', strtolower($args['title'])));
+	$strsql = "SELECT id, item_type, title, author_display "
+		. "FROM ciniki_library_items "
+		. "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
+		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "";
+	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.library', 'item');
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	if( !isset($rc['item']) ) {
+		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2100', 'msg'=>'Item not found'));
+	}
+	$item = $rc['item'];
+
+	if( isset($args['title']) || isset($args['author_display']) ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+		if( isset($args['author_display']) && isset($args['title']) ) {
+			$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['author_display'] . '-' . $args['title']);
+		} elseif( isset($args['author_display']) ) {
+			$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['author_display'] . '-' . $item['title']);
+		} elseif( isset($args['title']) ) {
+			$args['permalink'] = ciniki_core_makePermalink($ciniki, $item['author_display'] . '-' . $args['title']);
+		} else {
+			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2101', 'msg'=>'Unable to determine permalink.'));
+		}
 		//
 		// Make sure the permalink is unique
 		//
-		$strsql = "SELECT id, title, permalink FROM ciniki_library "
+		$strsql = "SELECT id, title, permalink FROM ciniki_library_items "
 			. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 			. "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
-			. "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
+			. "AND item_type = '" . ciniki_core_dbQuote($ciniki, $item['item_type']) . "' "
 			. "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
 			. "";
 		$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.library', 'item');

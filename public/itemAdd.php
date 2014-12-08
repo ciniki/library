@@ -48,7 +48,9 @@ function ciniki_library_itemAdd(&$ciniki) {
     $args = $rc['args'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-	$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['title']);
+	if( isset($args['author_display']) && $args['author_display'] != '' ) {
+		$args['permalink'] = ciniki_core_makePermalink($ciniki, $args['author_display'] . '-' . $args['title']);
+	}
     
     //  
     // Make sure this module is activated, and
