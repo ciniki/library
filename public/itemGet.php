@@ -96,6 +96,7 @@ function ciniki_library_itemGet($ciniki) {
 		. "FROM ciniki_library_tags "
 		. "WHERE item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND tag_type = 20 "
 		. "ORDER BY tag_type, tag_name "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.library', array(
@@ -108,7 +109,7 @@ function ciniki_library_itemGet($ciniki) {
 	if( isset($rc['tags']) ) {
 		foreach($rc['tags'] as $tags) {
 			if( $tags['tags']['tag_type'] == 20 ) {
-				$item['tags'] = $tags['tags']['lists'];
+				$item['genres'] = $tags['tags']['lists'];
 			}
 		}
 	}
@@ -127,8 +128,8 @@ function ciniki_library_itemGet($ciniki) {
 		if( $rc['stat'] != 'ok' ) {
 			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2098', 'msg'=>'Unable to get list of genres', 'err'=>$rc['err']));
 		}
-		if( isset($rc['genres']) ) {
-			$genres = $rc['genres'];
+		if( isset($rc['tags']) ) {
+			$genres = $rc['tags'];
 		}
 	}
 

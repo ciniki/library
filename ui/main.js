@@ -59,8 +59,8 @@ function ciniki_library_main() {
 //		};
 		this.menu.cellValue = function(s, i, j, d) {
 			switch (j) {
-				case 0: return d.item.title;
-				case 1: return d.item.author_display;
+				case 0: return d.item.author_display;
+				case 1: return d.item.title;
 				case 2: return d.item.year;
 			}
 		};

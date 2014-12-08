@@ -100,6 +100,9 @@ function ciniki_library_item() {
 				'delete':{'label':'Delete', 'fn':'M.ciniki_library_item.deleteItem();'},
 				}},
 		};
+		this.edit.sectionData = function(s) { 
+			return this.data[s]; 
+		};
 		this.edit.fieldValue = function(s, i, d) {
 			return this.data[i];
 		};
@@ -115,7 +118,6 @@ function ciniki_library_item() {
 			this.setFieldValue(fid, 0, null, null);
 			return true;
 		};
-		this.edit.sectionData = function(s) { if( this.data[s] != null ) { return this.data[s]; }};
 		this.edit.addButton('save', 'Save', 'M.ciniki_library_item.saveShipment();');
 		this.edit.addClose('Cancel');
 	}; 
@@ -139,22 +141,24 @@ function ciniki_library_item() {
 	this.editItem = function(cb, iid, type) {
 		if( iid != null ) { this.edit.item_id = iid; }
 		if( this.edit.item_id > 0 ) {
-//			this.edit.sections._buttons.buttons.delete.visible = 'yes';
 			this.edit.forms.music._buttons.buttons.delete.visible = 'yes';
 			this.edit.forms.book._buttons.buttons.delete.visible = 'yes';
 			M.api.getJSONCb('ciniki.library.itemGet', {'business_id':M.curBusinessID,
-				'item_id':this.edit.item_id}, function(rsp) {
+				'item_id':this.edit.item_id, 'genres':'yes'}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;
 					}
 					var p = M.ciniki_library_item.edit;
 					p.data = rsp.item;
+					var genres = [];
 					if( rsp.genres != null ) {
 						for(i in rsp.genres) {
-							p.sections._genres.fields.genres.tags.push(rsp.genres[i].tag.name);
+							genres.push(rsp.genres[i].tag.name);
 						}
 					}
+					p.forms.music._genres.fields.genres.tags = genres;
+					p.forms.book._genres.fields.genres.tags = genres;
 					p.refresh();
 					p.show(cb);
 				});
@@ -169,11 +173,14 @@ function ciniki_library_item() {
 				}
 				var p = M.ciniki_library_item.edit;
 				p.data = {'item_type':type};
+				var genres = [];
 				if( rsp.genres != null ) {
 					for(i in rsp.genres) {
-						p.sections._genres.fields.genres.tags.push(rsp.genres[i].tag.name);
+						genres.push(rsp.genres[i].tag.name);
 					}
 				}
+				p.forms.music._genres.fields.genres.tags = genres;
+				p.forms.book._genres.fields.genres.tags = genres;
 				p.refresh();
 				p.show(cb);
 			});

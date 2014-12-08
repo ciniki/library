@@ -125,11 +125,11 @@ function ciniki_library_itemUpdate(&$ciniki) {
 	//
 	// Update the tags
 	//
-	if( isset($args['tags']) ) {
+	if( isset($args['genres']) ) {
 		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
 		$rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.library', 'tag', $args['business_id'],
 			'ciniki_library_tags', 'ciniki_library_history',
-			'item_id', $args['item_id'], 20, $args['tags']);
+			'item_id', $args['item_id'], 20, $args['genres']);
 		if( $rc['stat'] != 'ok' ) {
 			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.library');
 			return $rc;
