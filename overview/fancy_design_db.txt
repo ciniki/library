@@ -1,0 +1,77 @@
+Books	
+	- title
+	- multiple authors
+	genre,
+		reference
+		science-fiction
+		fantasy
+		classics
+		dystopia
+	lists
+		Andrew's Top 10 Sci-Fi
+
+	flags:
+		0x01 - fiction
+		0x02 - non-fiction
+	isbn
+	- formats: mass paperback/trade paperback/hardcover/ebook/popup
+
+Movies
+	- title
+	- formats: DVD/VHS/Digital
+
+Music
+	- title
+	- group name
+	- formats: vinyl, cd, mp3, flac
+	- artists
+
+
+Parent/Child entries
+
+
+
+ciniki_library_items:	
+	- title
+	- flags
+		- 0x01 - fiction
+		- 0x02 - non-fiction
+	- synopsis
+	- description
+	- primary_image_id
+	- notes
+		 
+ciniki_library_item_versions:
+	- item_id
+	- format
+	- isbn
+
+ciniki_library_tags
+	- item_id
+	- tag_type: genre, list
+
+ciniki_library_item_groups
+	- item_id
+	- group_id
+
+ciniki_library_groups
+	- name
+	- sort_name
+	- primary_image_id
+	- synopsis
+	- long_description
+
+ciniki_library_version_people
+	- version_id
+	- author_id
+	- notes
+
+ciniki_library_people
+	- item_id
+	- last name
+	- first name
+	- sort_name
+
+ciniki_library_images
+	- item_id
+	- image_id

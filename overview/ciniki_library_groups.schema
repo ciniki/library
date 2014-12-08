@@ -1,0 +1,68 @@
+#
+# Description
+# -----------
+# This table stores the versions of an item.  This can include different copies of the same
+# album as vinyl, cd or the same book in paperback and hardcover.
+#
+# Fields
+# -------
+# id:				The database ID of the tag.
+# uuid:				The Universal Unique ID for the tag.
+# business_id:		The ID of the business the item is attached to.
+#
+# item_id:			The ID of the item in the library this version is for.
+#
+# title:			The title of the version.
+# permalink:		The permalink of the version.
+# 
+# format:			The format of the version
+#
+#					11 - Vinyl
+#					12 - CD
+#					15 - Digital
+#					21 - mp3
+#					22 - flac
+#
+#					30 - Hardcover
+#					41 - Trade Paperback
+#					42 - Mass Paperback
+#					51 - epub
+#					52 - mobi
+#
+# flags:			Different flags for the item.
+#
+# isbn:				The ISBN number for books.
+#
+# synopsis:			The brief description of the item
+#
+# description:		The long description of the item.
+#
+# primary_image_id:			The cover art
+# primary_image_caption:	The caption if any for the cover art
+#
+# notes:			The notes for the item.
+#
+# date_added:       The UTC date and time the tag was added.
+# last_updated:     The UTC date and time the tag was last updated.
+#
+create table ciniki_library_versions (
+	id bigint not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
+	item_id int not null,
+	title varchar(250) not null,
+	permalink varchar(250) not null,
+	format smallint unsigned not null,
+	flags smallint unsigned not null,
+	isbn varchar(250) not null,
+	synopsis varchar(6000) not null,
+	description varchar(20000) not null,
+	primary_image_id int not null,
+	primary_image_caption varchar(250) not null,
+	notes varchar(10000) not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	index (item_id),
+	index sync (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
