@@ -46,8 +46,8 @@ function ciniki_library_itemTags($ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	if( isset($rc['genres']) ) {
-		$genres = $rc['genres'];
+	if( isset($rc['tags']) ) {
+		$genres = $rc['tags'];
 	} else {
 		$genres = array();
 	}
