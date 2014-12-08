@@ -39,7 +39,7 @@ function ciniki_library_itemAdd(&$ciniki) {
         'primary_image_caption'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Image Caption'), 
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Notes'), 
         'purchased_date'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'type'=>'date', 'name'=>'Purchased Date'), 
-        'purchased_price'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Purchased Price'), 
+        'purchased_price'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'type'=>'currency', 'name'=>'Purchased Price'), 
         'purchased_place'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Purchased Place'), 
 		'genres'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Genres'),
         )); 

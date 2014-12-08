@@ -40,8 +40,14 @@ function ciniki_library_itemGet($ciniki) {
         return $rc;
     }   
 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'timezoneOffset');
-	$utc_offset = ciniki_users_timezoneOffset($ciniki);
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
+	$rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$intl_timezone = $rc['settings']['intl-default-timezone'];
+	$intl_currency_fmt = numfmt_create($rc['settings']['intl-default-locale'], NumberFormatter::CURRENCY);
+	$intl_currency = $rc['settings']['intl-default-currency'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
@@ -89,6 +95,9 @@ function ciniki_library_itemGet($ciniki) {
 		return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'2097', 'msg'=>'Unable to find item'));
 	}
 	$item = $rc['items'][0]['item'];
+
+	$item['purchased_price'] = numfmt_format_currency($intl_currency_fmt,
+		$item['purchased_price'], $intl_currency);
 
 	//
 	// Get the categories and tags for the post
