@@ -65,7 +65,7 @@ function ciniki_library_itemGet($ciniki) {
 		. "ciniki_library_items.primary_image_id, "
 		. "ciniki_library_items.primary_image_caption, "
 		. "ciniki_library_items.notes, "
-		. "ciniki_library_items.purchased_date, "
+		. "DATE_FORMAT(ciniki_library_items.purchased_date, '" . ciniki_core_dbQuote($ciniki, $date_format) . "') AS purchased_date, "
 		. "ciniki_library_items.purchased_price, "
 		. "ciniki_library_items.purchased_place "
 		. "FROM ciniki_library_items "
