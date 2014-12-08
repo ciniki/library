@@ -20,7 +20,7 @@ function ciniki_library_main() {
 		this.menu.data = {};
 		this.menu.item_type = 10;
 		this.menu.sections = {
-			'search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':1,
+			'search':{'label':'', 'autofocus':'yes', 'type':'livesearchgrid', 'livesearchcols':1,
 				'hint':'Search', 
 				'noData':'No items found',
 				'headerValues':null,
