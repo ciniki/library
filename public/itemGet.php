@@ -66,7 +66,8 @@ function ciniki_library_itemGet($ciniki) {
 		. "ciniki_library_items.primary_image_caption, "
 		. "ciniki_library_items.notes, "
 		. "ciniki_library_items.purchased_date, "
-		. "ciniki_library_items.purchased_price "
+		. "ciniki_library_items.purchased_price, "
+		. "ciniki_library_items.purchased_place "
 		. "FROM ciniki_library_items "
 		. "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND ciniki_library_items.id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
@@ -78,7 +79,7 @@ function ciniki_library_itemGet($ciniki) {
 			'fields'=>array('id', 'item_type', 'item_format', 'title', 'permalink', 
 				'author_display', 'author_sort', 'flags', 'isbn', 'year', 'location', 
 				'synopsis', 'description', 'primary_image_id', 'primary_image_caption',
-				'notes', 'purchased_date', 'purchased_price'),
+				'notes', 'purchased_date', 'purchased_price', 'purchased_place'),
 			),
 		));
 	if( $rc['stat'] != 'ok' ) {

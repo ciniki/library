@@ -50,6 +50,7 @@ function ciniki_library_item() {
 				'flags':{'label':'Options', 'type':'flags', 'flags':this.musicFlags},
 				'purchased_date':{'label':'Purchased Date', 'type':'date'},
 				'purchased_price':{'label':'Purchased Price', 'type':'text'},
+				'purchased_place':{'label':'Purchased Place', 'type':'text'},
 				}},
 			'_genres':{'label':'Genres', 'aside':'yes', 'fields':{
 				'genres':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new genre:'},
@@ -82,6 +83,7 @@ function ciniki_library_item() {
 				'flags':{'label':'Options', 'type':'flags', 'flags':this.bookFlags},
 				'purchased_date':{'label':'Purchased Date', 'type':'date'},
 				'purchased_price':{'label':'Purchased Price', 'type':'text'},
+				'purchased_place':{'label':'Purchased Place', 'type':'text'},
 				}},
 			'_genres':{'label':'Genres', 'aside':'yes', 'fields':{
 				'genres':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new genre:'},

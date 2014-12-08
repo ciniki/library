@@ -40,7 +40,9 @@ function ciniki_library_itemList($ciniki) {
 		. "title, "
 		. "author_display, "
 		. "author_sort, "
-		. "year "
+		. "year, "
+		. "IF(flags&0x01>0, 'yes', 'no') AS owned, "
+		. "IF(flags&0x02>0, 'yes', 'no') AS wanted "
 		. "FROM ciniki_library_items "
 		. "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 		. "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
@@ -55,7 +57,8 @@ function ciniki_library_itemList($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.library', array(
 		array('container'=>'items', 'fname'=>'title', 'name'=>'item', 
-			'fields'=>array('id', 'item_type', 'item_format', 'title', 'author_display', 'author_sort', 'year')),
+			'fields'=>array('id', 'item_type', 'item_format', 'title', 'author_display', 'author_sort', 'year',
+				'owned', 'wanted')),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;

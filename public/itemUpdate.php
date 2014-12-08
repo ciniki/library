@@ -40,6 +40,7 @@ function ciniki_library_itemUpdate(&$ciniki) {
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'), 
         'purchased_date'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Purchased Date'), 
         'purchased_price'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Purchased Price'), 
+        'purchased_place'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Purchased Place'), 
 		'genres'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Genres'),
         )); 
     if( $rc['stat'] != 'ok' ) { 

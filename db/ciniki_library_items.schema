@@ -56,6 +56,7 @@
 #
 # purchased_date:	The date the item was purchased.
 # purchased_price:	The price paid for the item.
+# purchased_place:	The place the item was purchased.
 #
 # date_added:       The UTC date and time the tag was added.
 # last_updated:     The UTC date and time the tag was last updated.
@@ -81,6 +82,7 @@ create table ciniki_library_items (
 	notes varchar(10000) not null,
 	purchased_date date not null,
 	purchased_price decimal(19,4) not null,
+	purchased_place varchar(200) not null,
 	date_added datetime not null,
 	last_updated datetime not null,
 	primary key (id),

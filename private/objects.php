@@ -34,6 +34,7 @@ function ciniki_library_objects($ciniki) {
 			'notes'=>array(),
 			'purchased_date'=>array(),
 			'purchased_price'=>array(),
+			'purchased_place'=>array(),
 			),
 		'history_table'=>'ciniki_event_history',
 		);

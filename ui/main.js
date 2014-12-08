@@ -47,7 +47,7 @@ function ciniki_library_main() {
 			return true;
 		};
 		this.menu.liveSearchResultValue = function(s, f, i, j, d) {
-			return d.item.title + (d.item.author_display!=''?', '+d.item.author_display:'');
+			return (d.item.author_display!=''?d.item.author_display+', ':'') + d.item.title + (d.item.wanted=='yes'?' [WANTED]':'');
 		};
 		this.menu.liveSearchResultRowFn = function(s, f, i, j, d) {
 			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showMenu();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
