@@ -31,6 +31,7 @@ function ciniki_library_itemAdd(&$ciniki) {
         'author_sort'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Author Sort'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'0', 'name'=>'Options'), 
         'isbn'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'ISBN'), 
+        'year'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'year'), 
         'location'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Location'), 
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Synopsis'), 
         'description'=>array('required'=>'no', 'blank'=>'yes', 'default'=>'', 'name'=>'Description'), 

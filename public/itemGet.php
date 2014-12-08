@@ -58,6 +58,7 @@ function ciniki_library_itemGet($ciniki) {
 		. "ciniki_library_items.author_sort, "
 		. "ciniki_library_items.flags, "
 		. "ciniki_library_items.isbn, "
+		. "ciniki_library_items.year, "
 		. "ciniki_library_items.location, "
 		. "ciniki_library_items.synopsis, "
 		. "ciniki_library_items.description, "
@@ -75,7 +76,7 @@ function ciniki_library_itemGet($ciniki) {
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.library', array(
 		array('container'=>'items', 'fname'=>'id', 'name'=>'item',
 			'fields'=>array('id', 'item_type', 'item_format', 'title', 'permalink', 
-				'author_display', 'author_sort', 'flags', 'isbn', 'location', 
+				'author_display', 'author_sort', 'flags', 'isbn', 'year', 'location', 
 				'synopsis', 'description', 'primary_image_id', 'primary_image_caption',
 				'notes', 'purchased_date', 'purchased_price'),
 			),

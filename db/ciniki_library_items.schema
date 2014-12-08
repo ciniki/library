@@ -41,6 +41,8 @@
 #
 # isbn:				The ISBN number for books.
 #
+# year:				The year published/released.
+#
 # location:			The physical location of the item Vinyl/CD/Books.
 #
 # synopsis:			The brief description of the item
@@ -70,6 +72,7 @@ create table ciniki_library_items (
 	author_sort varchar(250) not null,
 	flags smallint unsigned not null,
 	isbn varchar(200) not null,
+	year varchar(50) not null,
 	location varchar(200) not null,
 	synopsis varchar(6000) not null,
 	description varchar(20000) not null,

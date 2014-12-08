@@ -31,6 +31,7 @@ function ciniki_library_itemUpdate(&$ciniki) {
         'author_sort'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Author Sort'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'), 
         'isbn'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'ISBN'), 
+        'year'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Year'), 
         'location'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'), 
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'), 
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'), 

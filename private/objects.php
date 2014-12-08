@@ -25,6 +25,7 @@ function ciniki_library_objects($ciniki) {
 			'author_sort'=>array(),
 			'flags'=>array(),
 			'isbn'=>array(),
+			'year'=>array(),
 			'location'=>array(),
 			'synopsis'=>array(),
 			'description'=>array(),

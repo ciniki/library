@@ -29,11 +29,11 @@ function ciniki_library_main() {
 				'10':{'label':'Music', 'fn':'M.ciniki_library_main.showMenu(null,\'10\');'},
 				'20':{'label':'Books', 'fn':'M.ciniki_library_main.showMenu(null,\'20\');'},
 				}},
-			'type_10':{'label':'Music', 'visible':'no', 'type':'simplegrid', 'num_cols':2,
-				'headerValues':['Artist/Band', 'Album'],
+			'type_10':{'label':'Music', 'visible':'no', 'type':'simplegrid', 'num_cols':3,
+				'headerValues':['Artist/Band', 'Album', 'Year'],
 				},
-			'type_20':{'label':'Books', 'visible':'no', 'type':'simplegrid', 'num_cols':2,
-				'headerValues':['Author', 'Title'],
+			'type_20':{'label':'Books', 'visible':'no', 'type':'simplegrid', 'num_cols':3,
+				'headerValues':['Author', 'Title', 'Year'],
 				},
 			};
 		this.menu.listby = 'category';
@@ -47,7 +47,7 @@ function ciniki_library_main() {
 			return true;
 		};
 		this.menu.liveSearchResultValue = function(s, f, i, j, d) {
-			return this.cellValue(s, i, j, d);
+			return d.item.title + (d.item.author_display!=''?', '+d.item.author_display:'');
 		};
 		this.menu.liveSearchResultRowFn = function(s, f, i, j, d) {
 			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showMenu();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
@@ -59,7 +59,9 @@ function ciniki_library_main() {
 //		};
 		this.menu.cellValue = function(s, i, j, d) {
 			switch (j) {
-				case 0: return d.item.title + (d.item.author_display!=''?', '+d.item.author_display:'');
+				case 0: return d.item.title;
+				case 1: return d.item.author_display;
+				case 2: return d.item.year;
 			}
 		};
 		this.menu.rowFn = function(s, i, d) {
