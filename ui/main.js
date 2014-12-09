@@ -151,15 +151,28 @@ function ciniki_library_main() {
 //		this.list.liveSearchSubmitFn = function(s, search_str) {
 //			M.ciniki_library_main.searchArtCatalog('M.ciniki_library_main.showMenu();', search_str);
 //		};
+		this.list.sectionData = function(s) { 
+			return this.data[s];
+		};
 		this.list.cellValue = function(s, i, j, d) {
 			return d.item[this.sections[s].dataMaps[j]];
 		};
 		this.list.rowFn = function(s, i, d) {
 			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
 		};
-		this.list.sectionData = function(s) { 
-			return this.data[s];
+		this.list.footerValue = function(s, i, d) {
+			if( s == 'items' && this.list_type == 'purchased_place' && this.data.totals != null ) {
+				switch(i) {
+					case 4: return this.data.totals.purchased_price;
+				}
+				return '';
+			}
+			return null;
 		};
+//		this.list.footerClass = function(s, i, d) {
+//			if( i == 4 ) { return 'alignright'; }
+//			return '';
+//		}
 		this.list.addButton('add', 'Add', 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'add\':M.ciniki_library_main.list.item_type});');
 		this.list.addClose('Back');
 	}

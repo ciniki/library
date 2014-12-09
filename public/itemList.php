@@ -158,11 +158,16 @@ function ciniki_library_itemList($ciniki) {
 		return array('stat'=>'ok', 'items'=>array());
 	}
 	$items = $rc['items'];
+	$totals = array('purchased_price'=>0);
 	foreach($items as $iid => $item) {
 		$item = $item['item'];
+		$totals['purchased_price'] = bcadd($totals['purchased_price'], $item['purchased_price'], 4);
 		$items[$iid]['item']['purchased_price'] = numfmt_format_currency($intl_currency_fmt,
 			$item['purchased_price'], $intl_currency);
 	}
-	return array('stat'=>'ok', 'items'=>$items);
+	$totals['purchased_price'] = numfmt_format_currency($intl_currency_fmt,	
+		$totals['purchased_price'], $intl_currency);
+
+	return array('stat'=>'ok', 'items'=>$items, 'totals'=>$totals);
 }
 ?>
