@@ -313,7 +313,7 @@ function ciniki_library_main() {
 			this.list.sections.items.sortTypes = ['text', 'text', 'number', 'text', 'date', 'number'];
 			this.list.sections.items.dataMaps = ['author_display', 'title', 'purchased_place', 'purchased_date', 'purchased_price'];
 			M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
-				'item_type':this.list.item_type, 'flags':0x01, 'purchased_place':this.list.purchased_place}, function(rsp) {
+				'item_type':this.list.item_type, 'flags':0x01, 'purchased_place':encodeURIComponent(this.list.purchased_place)}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;
