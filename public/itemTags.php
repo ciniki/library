@@ -20,7 +20,7 @@ function ciniki_library_itemTags($ciniki) {
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
-		'item_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'),
+		'item_type'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Item Type'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -39,19 +39,14 @@ function ciniki_library_itemTags($ciniki) {
 	$modules = $rc['modules'];
 
 	//
-	// Get the list of genres
+	// Load the tags
 	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
-	$rc = ciniki_core_tagsList($ciniki, 'ciniki.library', $args['business_id'], 'ciniki_library_tags', 20);
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'loadTags');
+	$rc = ciniki_library_loadTags($ciniki, $args['business_id'], $args['item_type']);
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	if( isset($rc['tags']) ) {
-		$genres = $rc['tags'];
-	} else {
-		$genres = array();
-	}
 
-	return array('stat'=>'ok', 'genres'=>$genres);
+	return $rc;
 }
 ?>

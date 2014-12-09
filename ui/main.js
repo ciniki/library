@@ -35,6 +35,9 @@ function ciniki_library_main() {
 			'genres':{'label':'Genres', 'type':'simplegrid', 'num_cols':1,
 				'noData':'No genres found',
 				},
+			'tags':{'label':'Tags', 'type':'simplegrid', 'num_cols':1,
+				'noData':'No tags found',
+				},
 //			'type_10':{'label':'Music', 'visible':'no', 'type':'simplegrid', 'num_cols':3,
 //				'headerValues':['Artist/Band', 'Album', 'Year'],
 //				},
@@ -67,9 +70,17 @@ function ciniki_library_main() {
 			if( s == 'genres' ) {
 				return d.name.tag_name + ' <span class="count">' + d.name.num_items + '</span>';
 			}
+			if( s == 'tags' ) {
+				return d.name.tag_name + ' <span class="count">' + d.name.num_items + '</span>';
+			}
 		};
 		this.menu.rowFn = function(s, i, d) {
-			return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.name.tag_name + '\'),\'genre\',\'' + M.ciniki_library_main.menu.item_type + '\',\'' + d.name.tag_type + '\',\'' + d.name.permalink + '\');'
+			if( s == 'genres' ) {
+				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.name.tag_name + '\'),\'genre\',\'' + M.ciniki_library_main.menu.item_type + '\',\'' + d.name.tag_type + '\',\'' + d.name.permalink + '\');'
+			}
+			if( s == 'tags' ) {
+				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.name.tag_name + '\'),\'tag\',\'' + M.ciniki_library_main.menu.item_type + '\',\'' + d.name.tag_type + '\',\'' + d.name.permalink + '\');'
+			}
 		};
 		this.menu.listFn = function(s, i, d) { return d.fn; }
 		this.menu.noData = function(s) {
@@ -169,6 +180,7 @@ function ciniki_library_main() {
 		// Go through the list of item types looking for a match to this item type
 		//
 		p.data.genres = [];
+		p.data.tags = [];
 		for(i in p.data.item_types) {
 			if( p.data.item_types[i].type.item_type == p.item_type ) {
 				// 
@@ -177,17 +189,17 @@ function ciniki_library_main() {
 				for(j in p.data.item_types[i].type.tag_types) {
 					if( p.data.item_types[i].type.tag_types[j].type.tag_type == '20' ) {
 						p.data.genres = p.data.item_types[i].type.tag_types[j].type.names;
-						//
-						// Check for the number of uncategorized number of items
-						//
-						if( p.data.item_types[i].type.tag_types[j].type.uncategorized != null 
-							&& p.data.item_types[i].type.tag_types[j].type.uncategorized > 0 ) {
-							p.data.genres.push({'name':{'permalink':'', 'tag_name':'No Genre', 'tag_type':'20',
-								'num_items':p.data.item_types[i].type.tag_types[j].type.uncategorized}});
-						}
+					}
+					if( p.data.item_types[i].type.tag_types[j].type.tag_type == '40' ) {
+						p.data.tags = p.data.item_types[i].type.tag_types[j].type.names;
 					}
 				}
 			}
+		}
+		if( p.data.tags.length == 0 ) {
+			p.sections.tags.visible = 'no';
+		} else {
+			p.sections.tags.visible = 'yes';
 		}
 		p.refresh();
 		p.show();
@@ -204,12 +216,31 @@ function ciniki_library_main() {
 			}
 			var p = M.ciniki_library_main.menu;
 			p.data = rsp;
+			// 
+			// Add the uncategoried to bottom of genres
+			//
+			for(i in p.data.item_types) {
+				if( p.data.item_types[i].type.item_type == p.item_type ) {
+					// If we find a matching item_type, then go through the tag types to find the genres
+					for(j in p.data.item_types[i].type.tag_types) {
+						if( p.data.item_types[i].type.tag_types[j].type.tag_type == '20' ) {
+							// Look for tag type to add uncategoried for genre
+							if( p.data.item_types[i].type.tag_types[j].type.uncategorized != null 
+								&& p.data.item_types[i].type.tag_types[j].type.uncategorized > 0 ) {
+								p.data.item_types[i].type.tag_types[j].type.names.push({'name':{'permalink':'', 
+									'tag_name':'No Genre', 'tag_type':'20',
+									'num_items':p.data.item_types[i].type.tag_types[j].type.uncategorized}});
+							}
+						}
+					}
+				}
+			}
 			M.ciniki_library_main.switchMenuTab(p.item_type);
 		});
 	};
 
 	this.showList = function(cb, title, list_type, item_type, tag_type, tag_permalink) {
-		if( title != null ) { this.list.title = unescape(title); }
+		if( title != null ) { this.list.title = unescape(title); this.list.sections.items.label = unescape(title); }
 		if( list_type != null ) { this.list.list_type = list_type; }
 		if( item_type != null ) { this.list.item_type = item_type; }
 		if( tag_type != null ) { this.list.tag_type = tag_type; }
@@ -223,7 +254,7 @@ function ciniki_library_main() {
 			this.list.sections.items.headerValues = ['Author', 'Title', 'Year'];
 			this.list.sections.items.sortTypes = ['text', 'text', 'number'];
 		}
-		if( this.list.list_type == 'genre' ) {
+		if( this.list.list_type == 'genre' || this.list.list_type == 'tag' ) {
 			M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
 				'item_type':this.list.item_type, 'tag_type':this.list.tag_type, 
 				'tag_permalink':this.list.tag_permalink, 'flags':0x01}, function(rsp) {

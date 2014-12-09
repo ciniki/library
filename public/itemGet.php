@@ -23,7 +23,7 @@ function ciniki_library_itemGet($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'item_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Item'), 
 		'images'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Images'),
-		'genres'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Genres'),
+		'tags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tags'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -121,6 +121,9 @@ function ciniki_library_itemGet($ciniki) {
 			if( $tags['tags']['tag_type'] == 20 ) {
 				$item['genres'] = $tags['tags']['lists'];
 			}
+			if( $tags['tags']['tag_type'] == 40 ) {
+				$item['tags'] = $tags['tags']['lists'];
+			}
 		}
 	}
 
@@ -128,21 +131,24 @@ function ciniki_library_itemGet($ciniki) {
 	// Check if all tags should be returned
 	//
 	$genres = array();
-	if( isset($args['genres']) && $args['genres'] == 'yes' ) {
+	$tags = array();
+	if( isset($args['tags']) && $args['tags'] == 'yes' ) {
 		//
-		// Get the available genres
+		// Load the tags
 		//
-		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsList');
-		$rc = ciniki_core_tagsList($ciniki, 'ciniki.library', $args['business_id'], 
-			'ciniki_library_tags', 20);
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'loadTags');
+		$rc = ciniki_library_loadTags($ciniki, $args['business_id'], $item['item_type']);
 		if( $rc['stat'] != 'ok' ) {
-			return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2098', 'msg'=>'Unable to get list of genres', 'err'=>$rc['err']));
+			return $rc;
+		}
+		if( isset($rc['genres']) ) {
+			$genres = $rc['genres'];
 		}
 		if( isset($rc['tags']) ) {
-			$genres = $rc['tags'];
+			$tags = $rc['tags'];
 		}
 	}
 
-	return array('stat'=>'ok', 'item'=>$item, 'genres'=>$genres);
+	return array('stat'=>'ok', 'item'=>$item, 'genres'=>$genres, 'tags'=>$tags);
 }
 ?>

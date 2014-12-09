@@ -55,6 +55,9 @@ function ciniki_library_item() {
 			'_genres':{'label':'Genres', 'aside':'yes', 'fields':{
 				'genres':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new genre:'},
 				}},
+			'_tags':{'label':'Tags', 'aside':'yes', 'fields':{
+				'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
+				}},
 			'_synopsis':{'label':'Synopsis', 'fields':{
 				'synopsis':{'label':'', 'hidelabel':'', 'type':'textarea', 'size':'small'},
 				}},
@@ -87,6 +90,9 @@ function ciniki_library_item() {
 				}},
 			'_genres':{'label':'Genres', 'aside':'yes', 'fields':{
 				'genres':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new genre:'},
+				}},
+			'_tags':{'label':'Tags', 'aside':'yes', 'fields':{
+				'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
 				}},
 			'_synopsis':{'label':'Synopsis', 'fields':{
 				'synopsis':{'label':'', 'hidelabel':'', 'type':'textarea', 'size':'small'},
@@ -146,7 +152,7 @@ function ciniki_library_item() {
 			this.edit.forms.music._buttons.buttons.delete.visible = 'yes';
 			this.edit.forms.book._buttons.buttons.delete.visible = 'yes';
 			M.api.getJSONCb('ciniki.library.itemGet', {'business_id':M.curBusinessID,
-				'item_id':this.edit.item_id, 'genres':'yes'}, function(rsp) {
+				'item_id':this.edit.item_id, 'tags':'yes'}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;
@@ -155,12 +161,16 @@ function ciniki_library_item() {
 					p.data = rsp.item;
 					var genres = [];
 					if( rsp.genres != null ) {
-						for(i in rsp.genres) {
-							genres.push(rsp.genres[i].tag.name);
-						}
+						for(i in rsp.genres) { genres.push(rsp.genres[i].tag.name); }
+					}
+					var tags = [];
+					if( rsp.tags != null ) {
+						for(i in rsp.tags) { tags.push(rsp.tags[i].tag.name); }
 					}
 					p.forms.music._genres.fields.genres.tags = genres;
 					p.forms.book._genres.fields.genres.tags = genres;
+					p.forms.music._tags.fields.tags.tags = tags;
+					p.forms.book._tags.fields.tags.tags = tags;
 					p.refresh();
 					p.show(cb);
 				});
@@ -177,12 +187,16 @@ function ciniki_library_item() {
 				p.data = {'item_type':type};
 				var genres = [];
 				if( rsp.genres != null ) {
-					for(i in rsp.genres) {
-						genres.push(rsp.genres[i].tag.name);
-					}
+					for(i in rsp.genres) { genres.push(rsp.genres[i].tag.name); }
+				}
+				var tags = [];
+				if( rsp.tags != null ) {
+					for(i in rsp.tags) { tags.push(rsp.tags[i].tag.name); }
 				}
 				p.forms.music._genres.fields.genres.tags = genres;
 				p.forms.book._genres.fields.genres.tags = genres;
+				p.forms.music._tags.fields.tags.tags = tags;
+				p.forms.book._tags.fields.tags.tags = tags;
 				p.refresh();
 				p.show(cb);
 			});
