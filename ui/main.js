@@ -32,11 +32,17 @@ function ciniki_library_main() {
 			'menu':{'label':'', 'list':{
 				'wanted':{'label':'Wanted', 'fn':'M.ciniki_library_main.showWanted();'},
 				}},
+			'formats':{'label':'Formats', 'type':'simplegrid', 'num_cols':1,
+				'noData':'No formats found',
+				},
 			'genres':{'label':'Genres', 'type':'simplegrid', 'num_cols':1,
 				'noData':'No genres found',
 				},
 			'tags':{'label':'Tags', 'type':'simplegrid', 'num_cols':1,
 				'noData':'No tags found',
+				},
+			'purchased_places':{'label':'Purchased', 'type':'simplegrid', 'num_cols':1,
+				'noData':'No places found',
 				},
 //			'type_10':{'label':'Music', 'visible':'no', 'type':'simplegrid', 'num_cols':3,
 //				'headerValues':['Artist/Band', 'Album', 'Year'],
@@ -67,19 +73,31 @@ function ciniki_library_main() {
 //			M.ciniki_library_main.searchArtCatalog('M.ciniki_library_main.showMenu();', search_str);
 //		};
 		this.menu.cellValue = function(s, i, j, d) {
+			if( s == 'formats' ) {
+				return d.format.item_format_text + ' <span class="count">' + d.format.num_items + '</span>';
+			}
 			if( s == 'genres' ) {
 				return d.name.tag_name + ' <span class="count">' + d.name.num_items + '</span>';
 			}
 			if( s == 'tags' ) {
 				return d.name.tag_name + ' <span class="count">' + d.name.num_items + '</span>';
 			}
+			if( s == 'purchased_places' ) {
+				return d.place.purchased_place + ' <span class="count">' + d.place.num_items + '</span>';
+			}
 		};
 		this.menu.rowFn = function(s, i, d) {
+			if( s == 'formats' ) {
+				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.format.item_format_text + '\'),\'format\',\'' + M.ciniki_library_main.menu.item_type + '\',null,null,\'' + d.format.item_format + '\');'
+			}
 			if( s == 'genres' ) {
 				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.name.tag_name + '\'),\'genre\',\'' + M.ciniki_library_main.menu.item_type + '\',\'' + d.name.tag_type + '\',\'' + d.name.permalink + '\');'
 			}
 			if( s == 'tags' ) {
 				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.name.tag_name + '\'),\'tag\',\'' + M.ciniki_library_main.menu.item_type + '\',\'' + d.name.tag_type + '\',\'' + d.name.permalink + '\');'
+			}
+			if( s == 'purchased_places' ) {
+				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.place.purchased_place + '\'),\'purchased_place\',\'' + M.ciniki_library_main.menu.item_type + '\',null,null,null,\'' + d.place.purchased_place + '\');'
 			}
 		};
 		this.menu.listFn = function(s, i, d) { return d.fn; }
@@ -100,7 +118,7 @@ function ciniki_library_main() {
 		//
 		this.list = new M.panel('Library',
 			'ciniki_library_main', 'list',
-			'mc', 'medium', 'sectioned', 'ciniki.library.main.list');
+			'mc', 'medium mediumflex', 'sectioned', 'ciniki.library.main.list');
 		this.list.data = {};
 		this.list.item_type = 10;
 		this.list.sections = {
@@ -134,11 +152,7 @@ function ciniki_library_main() {
 //			M.ciniki_library_main.searchArtCatalog('M.ciniki_library_main.showMenu();', search_str);
 //		};
 		this.list.cellValue = function(s, i, j, d) {
-			switch (j) {
-				case 0: return d.item.author_display;
-				case 1: return d.item.title;
-				case 2: return d.item.year;
-			}
+			return d.item[this.sections[s].dataMaps[j]];
 		};
 		this.list.rowFn = function(s, i, d) {
 			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
@@ -179,13 +193,18 @@ function ciniki_library_main() {
 		//
 		// Go through the list of item types looking for a match to this item type
 		//
+		p.data.formats = [];
 		p.data.genres = [];
 		p.data.tags = [];
+		p.data.purchased_places = [];
 		for(i in p.data.item_types) {
 			if( p.data.item_types[i].type.item_type == p.item_type ) {
 				// 
 				// If we find a matching item_type, then go through the tag types to find the genres
 				//
+				if( p.data.item_types[i].type.formats != null ) {
+					p.data.formats = p.data.item_types[i].type.formats;
+				}
 				for(j in p.data.item_types[i].type.tag_types) {
 					if( p.data.item_types[i].type.tag_types[j].type.tag_type == '20' ) {
 						p.data.genres = p.data.item_types[i].type.tag_types[j].type.names;
@@ -194,13 +213,14 @@ function ciniki_library_main() {
 						p.data.tags = p.data.item_types[i].type.tag_types[j].type.names;
 					}
 				}
+				if( p.data.item_types[i].type.purchased_places != null ) {
+					p.data.purchased_places = p.data.item_types[i].type.purchased_places;
+				}
 			}
 		}
-		if( p.data.tags.length == 0 ) {
-			p.sections.tags.visible = 'no';
-		} else {
-			p.sections.tags.visible = 'yes';
-		}
+		p.sections.tags.visible = (p.data.tags.length==0?'no':'yes');
+		p.sections.formats.visible = (p.data.formats.length==0?'no':'yes');
+		p.sections.purchased_places.visible = (p.data.purchased_places.length==0?'no':'yes');
 		p.refresh();
 		p.show();
 	}
@@ -239,20 +259,24 @@ function ciniki_library_main() {
 		});
 	};
 
-	this.showList = function(cb, title, list_type, item_type, tag_type, tag_permalink) {
+	this.showList = function(cb, title, list_type, item_type, tag_type, tag_permalink, format, purchased_place) {
 		if( title != null ) { this.list.title = unescape(title); this.list.sections.items.label = unescape(title); }
 		if( list_type != null ) { this.list.list_type = list_type; }
 		if( item_type != null ) { this.list.item_type = item_type; }
 		if( tag_type != null ) { this.list.tag_type = tag_type; }
 		if( tag_permalink != null ) { this.list.tag_permalink = tag_permalink; }
+		if( format != null ) { this.list.item_format = format; }
+		if( purchased_place != null ) { this.list.purchased_place = purchased_place; }
 		if( this.list.item_type == '10' ) {
 			this.list.sections.items.num_cols = 3;
 			this.list.sections.items.headerValues = ['Artist', 'Album', 'Year'];
 			this.list.sections.items.sortTypes = ['text', 'text', 'number'];
+			this.list.sections.items.dataMaps = ['author_display', 'title', 'year'];
 		} else if( this.list.item_type == '20' ) {
 			this.list.sections.items.num_cols = 3;
 			this.list.sections.items.headerValues = ['Author', 'Title', 'Year'];
 			this.list.sections.items.sortTypes = ['text', 'text', 'number'];
+			this.list.sections.items.dataMaps = ['author_display', 'title', 'year'];
 		}
 		if( this.list.list_type == 'genre' || this.list.list_type == 'tag' ) {
 			M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
@@ -267,7 +291,40 @@ function ciniki_library_main() {
 					p.refresh();
 					p.show(cb);
 				});
-		} else if( this.list.list_type == 'wanted' ) {
+		} 
+		else if( this.list.list_type == 'format' ) {
+			M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
+				'item_type':this.list.item_type, 'flags':0x01, 'item_format':this.list.item_format}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					var p = M.ciniki_library_main.list;
+					p.data = rsp;
+					p.refresh();
+					p.show(cb);
+				});
+		} 
+		else if( this.list.list_type == 'purchased_place' ) {
+			this.list.sections.items.num_cols = 5;
+			this.list.sections.items.headerValues[2] = 'Place';
+			this.list.sections.items.headerValues[3] = 'Date';
+			this.list.sections.items.headerValues[4] = 'Price';
+			this.list.sections.items.sortTypes = ['text', 'text', 'number', 'text', 'date', 'number'];
+			this.list.sections.items.dataMaps = ['author_display', 'title', 'purchased_place', 'purchased_date', 'purchased_price'];
+			M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
+				'item_type':this.list.item_type, 'flags':0x01, 'purchased_place':this.list.purchased_place}, function(rsp) {
+					if( rsp.stat != 'ok' ) {
+						M.api.err(rsp);
+						return false;
+					}
+					var p = M.ciniki_library_main.list;
+					p.data = rsp;
+					p.refresh();
+					p.show(cb);
+				});
+		} 
+		else if( this.list.list_type == 'wanted' ) {
 			M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
 				'item_type':this.list.item_type, 'flags':0x02}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
@@ -279,7 +336,6 @@ function ciniki_library_main() {
 					p.refresh();
 					p.show(cb);
 				});
-			
 		}
 
 	};
