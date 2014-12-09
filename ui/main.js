@@ -88,16 +88,16 @@ function ciniki_library_main() {
 		};
 		this.menu.rowFn = function(s, i, d) {
 			if( s == 'formats' ) {
-				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.format.item_format_text + '\'),\'format\',\'' + M.ciniki_library_main.menu.item_type + '\',null,null,\'' + d.format.item_format + '\');'
+				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',\'' + escape(d.format.item_format_text) + '\',\'format\',\'' + M.ciniki_library_main.menu.item_type + '\',null,null,\'' + d.format.item_format + '\');'
 			}
 			if( s == 'genres' ) {
-				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.name.tag_name + '\'),\'genre\',\'' + M.ciniki_library_main.menu.item_type + '\',\'' + d.name.tag_type + '\',\'' + d.name.permalink + '\');'
+				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',\'' + escape(d.name.tag_name) + '\',\'genre\',\'' + M.ciniki_library_main.menu.item_type + '\',\'' + d.name.tag_type + '\',\'' + d.name.permalink + '\');'
 			}
 			if( s == 'tags' ) {
-				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.name.tag_name + '\'),\'tag\',\'' + M.ciniki_library_main.menu.item_type + '\',\'' + d.name.tag_type + '\',\'' + d.name.permalink + '\');'
+				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',\'' + escape(d.name.tag_name) + '\',\'tag\',\'' + M.ciniki_library_main.menu.item_type + '\',\'' + d.name.tag_type + '\',\'' + d.name.permalink + '\');'
 			}
 			if( s == 'purchased_places' ) {
-				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',escape(\'' + d.place.purchased_place + '\'),\'purchased_place\',\'' + M.ciniki_library_main.menu.item_type + '\',null,null,null,\'' + d.place.purchased_place + '\');'
+				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',\'' + escape(d.place.purchased_place) + '\',\'purchased_place\',\'' + M.ciniki_library_main.menu.item_type + '\',null,null,null,\'' + escape(d.place.purchased_place) + '\');'
 			}
 		};
 		this.menu.listFn = function(s, i, d) { return d.fn; }
@@ -266,7 +266,7 @@ function ciniki_library_main() {
 		if( tag_type != null ) { this.list.tag_type = tag_type; }
 		if( tag_permalink != null ) { this.list.tag_permalink = tag_permalink; }
 		if( format != null ) { this.list.item_format = format; }
-		if( purchased_place != null ) { this.list.purchased_place = purchased_place; }
+		if( purchased_place != null ) { this.list.purchased_place = unescape(purchased_place); }
 		if( this.list.item_type == '10' ) {
 			this.list.sections.items.num_cols = 3;
 			this.list.sections.items.headerValues = ['Artist', 'Album', 'Year'];
