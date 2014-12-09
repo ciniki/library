@@ -38,6 +38,7 @@
 # flags:			Different flags for the item.
 #
 #					0x01 - Item is owned and in collection.
+#					0x02 - Item is in the wanted/wishlist.
 #
 # isbn:				The ISBN number for books.
 #
