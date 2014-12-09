@@ -126,7 +126,7 @@ function ciniki_library_main() {
 			return (d.item.author_display!=''?d.item.author_display+', ':'') + d.item.title + (d.item.wanted=='yes'?' [WANTED]':'');
 		};
 		this.list.liveSearchResultRowFn = function(s, f, i, j, d) {
-			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showMenu();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
+			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
 		};
 		this.list.liveSearchResultRowStyle = function(s, f, i, d) { return ''; };
 // 		Currently not allowing full search
@@ -141,12 +141,12 @@ function ciniki_library_main() {
 			}
 		};
 		this.list.rowFn = function(s, i, d) {
-			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showMenu();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
+			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
 		};
 		this.list.sectionData = function(s) { 
 			return this.data[s];
 		};
-		this.list.addButton('add', 'Add', 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showMenu();\',\'mc\',{\'add\':M.ciniki_library_main.list.item_type});');
+		this.list.addButton('add', 'Add', 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'add\':M.ciniki_library_main.list.item_type});');
 		this.list.addClose('Back');
 	}
 

@@ -106,7 +106,6 @@ function ciniki_library_itemGet($ciniki) {
 		. "FROM ciniki_library_tags "
 		. "WHERE item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
 		. "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND tag_type = 20 "
 		. "ORDER BY tag_type, tag_name "
 		. "";
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.library', array(

@@ -24,7 +24,7 @@ function ciniki_library_loadTags($ciniki, $business_id, $item_type) {
 		. "AND ciniki_library_items.id = ciniki_library_tags.item_id "
 		. "AND ciniki_library_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
 		. "";
-	$strsql .= "GROUP BY tag_type ";
+	$strsql .= "GROUP BY fname ";
 	$strsql .= "ORDER BY tag_type, tag_name ";
 
 	$rsp = array('stat'=>'ok', 
@@ -35,7 +35,7 @@ function ciniki_library_loadTags($ciniki, $business_id, $item_type) {
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
 	$rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.library', array(
-		array('container'=>'types', 'fname'=>'fname', 'name'=>'type',
+		array('container'=>'types', 'fname'=>'tag_type', 'name'=>'type',
 			'fields'=>array('type'=>'tag_type')),
 		array('container'=>'tags', 'fname'=>'fname', 'name'=>'tag',
 			'fields'=>array('type'=>'tag_type', 'name'=>'tag_name')),
