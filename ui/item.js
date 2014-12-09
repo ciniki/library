@@ -30,7 +30,7 @@ function ciniki_library_item() {
 			'ciniki_library_item', 'edit',
 			'mc', 'medium mediumaside', 'sectioned', 'ciniki.library.item.edit');
 		this.edit.item_id = 0;
-		this.edit.data = {};
+		this.edit.data = {'item_type':10};
 		this.edit.formtabs = {'label':'', 'field':'item_type', 'tabs':{
 			'music':{'label':'Music', 'field_id':10},
 			'book':{'label':'Book', 'field_id':20},
@@ -148,6 +148,7 @@ function ciniki_library_item() {
 
 	this.editItem = function(cb, iid, type) {
 		if( iid != null ) { this.edit.item_id = iid; }
+		if( type != null ) { this.edit.item_type = type; }
 		if( this.edit.item_id > 0 ) {
 			this.edit.forms.music._buttons.buttons.delete.visible = 'yes';
 			this.edit.forms.book._buttons.buttons.delete.visible = 'yes';
@@ -175,16 +176,18 @@ function ciniki_library_item() {
 					p.show(cb);
 				});
 		} else {
+			this.edit.reset();
 			this.edit.forms.music._buttons.buttons.delete.visible = 'no';
 			this.edit.forms.book._buttons.buttons.delete.visible = 'no';
 			// Get tags
-			M.api.getJSONCb('ciniki.library.itemTags', {'business_id':M.curBusinessID}, function(rsp) {
+			M.api.getJSONCb('ciniki.library.itemTags', {'business_id':M.curBusinessID, 
+				'item_type':this.edit.item_type}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
 					return false;
 				}
 				var p = M.ciniki_library_item.edit;
-				p.data = {'item_type':type};
+				p.data = {'item_type':M.ciniki_library_item.edit.item_type};
 				var genres = [];
 				if( rsp.genres != null ) {
 					for(i in rsp.genres) { genres.push(rsp.genres[i].tag.name); }
