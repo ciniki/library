@@ -1,5 +1,5 @@
 //
-// This panel will create or edit an invoice
+// This panel will create or edit an item in the library
 //
 function ciniki_library_item() {
 	this.musicFormats = {
@@ -157,7 +157,7 @@ function ciniki_library_item() {
 			this.setFieldValue(fid, 0, null, null);
 			return true;
 		};
-		this.edit.addButton('save', 'Save', 'M.ciniki_library_item.saveShipment();');
+		this.edit.addButton('save', 'Save', 'M.ciniki_library_item.saveItem();');
 		this.edit.addClose('Cancel');
 	}; 
 
@@ -264,11 +264,11 @@ function ciniki_library_item() {
 		}
 	};
 
-	this.deleteItem = function(iid) {
-		if( iid <= 0 ) { return false; }
+	this.deleteItem = function() {
+		if( this.edit.item_id <= 0 ) { return false; }
 		if( confirm("Are you sure you want to remove this item from the library?") ) {
-			M.api.getJSONCb('ciniki.library.shipmentItemDelete', {'business_id':M.curBusinessID,
-				'item_id':iid}, function(rsp) {
+			M.api.getJSONCb('ciniki.library.itemDelete', {'business_id':M.curBusinessID,
+				'item_id':this.edit.item_id}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;

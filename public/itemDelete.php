@@ -71,21 +71,9 @@ function ciniki_library_itemDelete(&$ciniki) {
 	}   
 
 	//
-	// run ciniki.library.itemDelete hooks
-	//
-	$rc = ciniki_core_methodFishHooks($ciniki, $args['business_id'], 'ciniki.library.itemDelete', 
-		array('item_id'=>$args['item_id']));
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-
-	//
-	// FIXME: Delete any notes
-	//
-
-	//
 	// Remove the item
 	//
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
 	$rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.library.item',
 		$args['item_id'], $uuid);
 	if( $rc['stat'] != 'ok' ) {
