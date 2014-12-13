@@ -31,10 +31,7 @@ function ciniki_library_item() {
 			'mc', 'medium mediumaside', 'sectioned', 'ciniki.library.item.edit');
 		this.edit.item_id = 0;
 		this.edit.data = {'item_type':10};
-		this.edit.formtabs = {'label':'', 'field':'item_type', 'tabs':{
-			'music':{'label':'Music', 'field_id':10},
-			'book':{'label':'Book', 'field_id':20},
-			}};
+		this.edit.formtabs = {'label':'', 'field':'item_type', 'tabs':{}};
 		this.edit.forms = {};
 		this.edit.forms.music = {
 			'_image':{'label':'', 'aside':'yes', 'fields':{
@@ -169,6 +166,22 @@ function ciniki_library_item() {
 			alert('App Error');
 			return false;
 		}
+
+		this.edit.formtabs.tabs = {};
+		var ct = 0;
+		var default_tab = 0;
+		if( (M.curBusiness.modules['ciniki.library'].flags&0x01) > 0 ) {
+			default_tab = 10;
+			ct++;
+			this.edit.formtabs.tabs['music'] = {'label':'Music', 'field_id':10};
+		}
+		if( (M.curBusiness.modules['ciniki.library'].flags&0x02) > 0 ) {
+			if( default_tab == 0 ) { default_tab = 20; }
+			ct++;
+			this.edit.formtabs.tabs['book'] = {'label':'Books', 'field_id':20};
+		}
+		this.edit.formtabs.selected = default_tab;
+		this.edit.formtabs.visible = (ct>1?'yes':'no');
 
 		if( args.add != null ) {
 			this.editItem(cb, 0, args.add);

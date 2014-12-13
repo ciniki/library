@@ -40,6 +40,7 @@ function ciniki_library_itemStats($ciniki) {
 	$maps = $rc['maps'];
 
 	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
 
 	$rsp = array('stat'=>'ok', 'item_types'=>array());
 
@@ -71,7 +72,9 @@ function ciniki_library_itemStats($ciniki) {
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
 	}
-	$rsp['item_types'] = $rc['item_types'];
+	if( isset($rc['item_types']) ) {
+		$rsp['item_types'] = $rc['item_types'];
+	}
 
 	//
 	// Select the items with no Genre
@@ -143,12 +146,14 @@ function ciniki_library_itemStats($ciniki) {
 		return $rc;
 	}
 	$types = array();
-	foreach($rc['item_types'] as $type) {
-		$types[$type['type']['item_type']] = $type['type']['formats'];
-	}
-	foreach($rsp['item_types'] as $itid => $item_type) {
-		if( isset($types[$item_type['type']['item_type']]) ) {
-			$rsp['item_types'][$itid]['type']['formats'] = $types[$item_type['type']['item_type']];
+	if( isset($rc['item_types']) ) {
+		foreach($rc['item_types'] as $type) {
+			$types[$type['type']['item_type']] = $type['type']['formats'];
+		}
+		foreach($rsp['item_types'] as $itid => $item_type) {
+			if( isset($types[$item_type['type']['item_type']]) ) {
+				$rsp['item_types'][$itid]['type']['formats'] = $types[$item_type['type']['item_type']];
+			}
 		}
 	}
 
@@ -158,7 +163,7 @@ function ciniki_library_itemStats($ciniki) {
 	$strsql = "SELECT item_type, purchased_place, COUNT(purchased_place) AS num_items "
 		. "FROM ciniki_library_items "
 		. "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND ciniki_library_items.flags&0x01 = 1 "
+		. "AND (ciniki_library_items.flags&0x01) = 1 "
 		. "AND purchased_place <> '' "
 		. "GROUP BY item_type, purchased_place "
 		. "ORDER BY item_type, purchased_place "
@@ -173,12 +178,40 @@ function ciniki_library_itemStats($ciniki) {
 		return $rc;
 	}
 	$types = array();
-	foreach($rc['item_types'] as $type) {
-		$types[$type['type']['item_type']] = $type['type']['places'];
+	if( isset($rc['item_types']) ) {
+		foreach($rc['item_types'] as $type) {
+			$types[$type['type']['item_type']] = $type['type']['places'];
+		}
+		foreach($rsp['item_types'] as $itid => $item_type) {
+			if( isset($types[$item_type['type']['item_type']]) ) {
+				$rsp['item_types'][$itid]['type']['purchased_places'] = $types[$item_type['type']['item_type']];
+			}
+		}
 	}
-	foreach($rsp['item_types'] as $itid => $item_type) {
-		if( isset($types[$item_type['type']['item_type']]) ) {
-			$rsp['item_types'][$itid]['type']['purchased_places'] = $types[$item_type['type']['item_type']];
+
+	//
+	// Get the number of wanted
+	//
+	$strsql = "SELECT item_type, COUNT(id) AS num_items "
+		. "FROM ciniki_library_items "
+		. "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+		. "AND (ciniki_library_items.flags&0x02) = 2 "
+		. "GROUP BY item_type "
+		. "ORDER BY item_type "
+		. "";
+	$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.library', array(
+		array('container'=>'item_types', 'fname'=>'item_type',
+			'fields'=>array('item_type', 'num_items')),
+		));
+	if( $rc['stat'] != 'ok' ) {
+		return $rc;
+	}
+	$types = array();
+	if( isset($rc['item_types']) ) {
+		foreach($rsp['item_types'] as $itid => $item_type) {
+			if( isset($rc['item_types'][$item_type['type']['item_type']]) ) {
+				$rsp['item_types'][$itid]['type']['wanted'] = $rc['item_types'][$item_type['type']['item_type']]['num_items'];
+			}
 		}
 	}
 

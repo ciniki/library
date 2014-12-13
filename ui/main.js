@@ -30,7 +30,7 @@ function ciniki_library_main() {
 				'20':{'label':'Books', 'fn':'M.ciniki_library_main.switchMenuTab(\'20\');'},
 				}},
 			'menu':{'label':'', 'list':{
-				'wanted':{'label':'Wanted', 'fn':'M.ciniki_library_main.showWanted();'},
+				'wanted':{'label':'Wanted', 'visible':'no', 'fn':'M.ciniki_library_main.showWanted();'},
 				}},
 			'formats':{'label':'Formats', 'type':'simplegrid', 'num_cols':1,
 				'noData':'No formats found',
@@ -100,6 +100,10 @@ function ciniki_library_main() {
 				return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showMenu();\',\'' + escape(d.place.purchased_place) + '\',\'purchased_place\',\'' + M.ciniki_library_main.menu.item_type + '\',null,null,null,\'' + escape(d.place.purchased_place) + '\');'
 			}
 		};
+//		this.menu.listCount = function(s, i, d) { 
+//			if( d.count != null ) { return d.count; }
+//			return ''; 
+//		};
 		this.menu.listFn = function(s, i, d) { return d.fn; }
 		this.menu.noData = function(s) {
 			if( this.sections[s].noData != null ) { return this.sections[s].noData; }
@@ -192,7 +196,24 @@ function ciniki_library_main() {
 			return false;
 		}
 
-		this.showMenu(cb, 10);
+		//
+		// Decide what to display
+		//
+		this.menu.sections.tabs.tabs = {};
+		var default_tab = 0;
+		var ct = 0;
+		if( (M.curBusiness.modules['ciniki.library'].flags&0x01) > 0 ) {
+			default_tab = 10;
+			ct++;
+			this.menu.sections.tabs.tabs['10'] = {'label':'Music', 'fn':'M.ciniki_library_main.switchMenuTab(\'10\');'};
+		}
+		if( (M.curBusiness.modules['ciniki.library'].flags&0x02) > 0 ) {
+			if( default_tab == 0 ) { default_tab = 20; }
+			ct++;
+			this.menu.sections.tabs.tabs['20'] = {'label':'Books', 'fn':'M.ciniki_library_main.switchMenuTab(\'20\');'};
+		}
+		this.menu.sections.tabs.visible = (ct>1?'yes':'no');
+		this.showMenu(cb, default_tab);
 	}
 
 	this.showWanted = function() {
@@ -210,8 +231,16 @@ function ciniki_library_main() {
 		p.data.genres = [];
 		p.data.tags = [];
 		p.data.purchased_places = [];
+		p.sections.menu.visible = 'no';
+		p.sections.menu.list.wanted.count = 0;
+		p.sections.menu.list.wanted.visible = 'no';
 		for(i in p.data.item_types) {
 			if( p.data.item_types[i].type.item_type == p.item_type ) {
+				if( p.data.item_types[i].type.wanted != null ) {
+					p.sections.menu.list.wanted.count = p.data.item_types[i].type.wanted;
+					p.sections.menu.visible = 'yes';
+					p.sections.menu.list.wanted.visible = 'yes';
+				}
 				// 
 				// If we find a matching item_type, then go through the tag types to find the genres
 				//
