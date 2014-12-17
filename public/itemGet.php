@@ -112,6 +112,7 @@ function ciniki_library_itemGet($ciniki) {
 			. "FROM ciniki_business_users "
 			. "LEFT JOIN ciniki_library_reviews ON ("
 				. "ciniki_business_users.user_id = ciniki_library_reviews.user_id "
+				. "AND ciniki_library_reviews.item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
 				. "AND ciniki_library_reviews.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
 				. ") "
 			. "WHERE ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
