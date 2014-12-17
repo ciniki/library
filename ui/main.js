@@ -404,8 +404,19 @@ function ciniki_library_main() {
 				});
 		} 
 		else if( this.list.list_type == 'wanted' ) {
-			M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
-				'item_type':this.list.item_type, 'flags':0x02}, function(rsp) {
+			this.list.sections.items.num_cols = 3;
+			this.list.sections.items.headerValues = ['Author', 'Title'];
+			var col = 2;
+			for(i in M.curBusiness.employees) {
+				console.log(M.curBusiness.employees[i]);
+				this.list.sections.items.headerValues[col] = M.curBusiness.employees[i];
+				this.list.sections.items.sortTypes[col] = 'text';
+				this.list.sections.items.dataMaps[col] = 'user-' + i + '-rating';
+				col++;
+			}
+			this.list.sections.items.num_cols = col;
+			M.api.getJSONCb('ciniki.library.itemListWanted', {'business_id':M.curBusinessID, 
+				'item_type':this.list.item_type}, function(rsp) {
 					if( rsp.stat != 'ok' ) {
 						M.api.err(rsp);
 						return false;

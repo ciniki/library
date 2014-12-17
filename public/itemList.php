@@ -155,7 +155,7 @@ function ciniki_library_itemList($ciniki) {
 		return $rc;
 	}
 	if( !isset($rc['items']) || !is_array($rc['items']) ) {
-		return array('stat'=>'ok', 'items'=>array());
+		return array('stat'=>'ok', 'items'=>array(), 'totals'=>array());
 	}
 	$items = $rc['items'];
 	$totals = array('purchased_price'=>0);
