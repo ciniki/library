@@ -100,6 +100,39 @@ function ciniki_library_itemGet($ciniki) {
 		$item['purchased_price'], $intl_currency);
 
 	//
+	// Get the ratings for the item
+	//
+	if( ($ciniki['business']['modules']['ciniki.library']['flags']&0x08) > 0 ) {
+		//
+		// Get the existing ratings and employees
+		//
+		$strsql = "SELECT ciniki_business_users.user_id, "
+			. "IFNULL(ciniki_library_reviews.id, 0) AS review_id, "
+			. "IFNULL(ciniki_library_reviews.rating, 0) AS rating "
+			. "FROM ciniki_business_users "
+			. "LEFT JOIN ciniki_library_reviews ON ("
+				. "ciniki_business_users.user_id = ciniki_library_reviews.user_id "
+				. "AND ciniki_library_reviews.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+				. ") "
+			. "WHERE ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND ciniki_business_users.status = 10 "
+			. "";
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+		$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
+			array('container'=>'employees', 'fname'=>'user_id',
+				'fields'=>array('user_id', 'review_id', 'rating')),
+			));
+		if( $rc['stat'] != 'ok' ) {
+			return $rc;
+		}
+		if( isset($rc['employees']) ) {
+			foreach($rc['employees'] as $user_id => $user) {
+				$item['user-' . $user_id . '-rating'] = $user['rating'];
+			}
+		}
+	}
+
+	//
 	// Get the categories and tags for the post
 	//
 	$strsql = "SELECT tag_type, tag_name AS lists "

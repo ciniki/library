@@ -22,6 +22,20 @@ function ciniki_library_item() {
 		'1':{'name':'Owned'},
 		'2':{'name':'Wanted'},
 		};
+	this.ratingToggles = {
+		'1':'*',
+		'2':'**',
+		'3':'***',
+		'4':'****',
+		'5':'*****',
+		};
+	this.priorityToggles = {
+		'1':'$',
+		'2':'$$',
+		'3':'$$$',
+		'4':'$$$$',
+		'5':'$$$$$',
+		};
 	this.init = function() {
 		//
 		// The edit panel
@@ -31,6 +45,7 @@ function ciniki_library_item() {
 			'mc', 'medium mediumaside', 'sectioned', 'ciniki.library.item.edit');
 		this.edit.item_id = 0;
 		this.edit.data = {'item_type':10};
+		this.edit.owned_wanted = 'owned';
 		this.edit.formtabs = {'label':'', 'field':'item_type', 'tabs':{}};
 		this.edit.forms = {};
 		this.edit.forms.music = {
@@ -44,7 +59,15 @@ function ciniki_library_item() {
 				'author_sort':{'label':'Sort Artist', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
 				'year':{'label':'Year', 'type':'text'},
 				'location':{'label':'Location', 'type':'text'},
-				'flags':{'label':'Options', 'type':'flags', 'flags':this.musicFlags},
+//				'flags':{'label':'Options', 'type':'flags', 'flags':this.musicFlags},
+				}},
+			'_owned':{'label':'', 'type':'paneltabs', 'aside':'yes', 'selected':'owned', 'tabs':{
+				'owned':{'label':'Owned', 'fn':'M.ciniki_library_item.toggleOwnedWanted(\'owned\');'},
+				'wanted':{'label':'Wanted', 'fn':'M.ciniki_library_item.toggleOwnedWanted(\'wanted\');'},
+				}},
+			'ratings':{'label':'', 'aside':'yes', 'visible':'yes', 'aside':'yes', 'fields':{
+				}},
+			'purchased':{'label':'', 'aside':'yes', 'visible':'hidden', 'aside':'yes', 'fields':{
 				'purchased_date':{'label':'Purchased Date', 'type':'date'},
 				'purchased_price':{'label':'Purchased Price', 'type':'text'},
 				'purchased_place':{'label':'Purchased Place', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
@@ -80,7 +103,15 @@ function ciniki_library_item() {
 				'author_sort':{'label':'Sort Author', 'type':'text', 'livesearch':'yes', 'livesearchempty':'no'},
 				'year':{'label':'Year', 'type':'text'},
 				'location':{'label':'Location', 'type':'text'},
-				'flags':{'label':'Options', 'type':'flags', 'flags':this.bookFlags},
+//				'flags':{'label':'Options', 'type':'flags', 'flags':this.bookFlags},
+				}},
+			'_owned':{'label':'', 'aside':'yes', 'type':'paneltabs', 'selected':'owned', 'tabs':{
+				'owned':{'label':'Owned', 'fn':'M.ciniki_library_item.toggleOwnedWanted(\'owned\');'},
+				'wanted':{'label':'Wanted', 'fn':'M.ciniki_library_item.toggleOwnedWanted(\'wanted\');'},
+				}},
+			'ratings':{'label':'', 'aside':'yes', 'visible':'yes', 'aside':'yes', 'fields':{
+				}},
+			'purchased':{'label':'', 'active':'no', 'aside':'yes', 'fields':{
 				'purchased_date':{'label':'Purchased Date', 'type':'date'},
 				'purchased_price':{'label':'Purchased Price', 'type':'text'},
 				'purchased_place':{'label':'Purchased Place', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
@@ -167,6 +198,9 @@ function ciniki_library_item() {
 			return false;
 		}
 
+		//
+		// Setup which forms they have activated for the business
+		//
 		this.edit.formtabs.tabs = {};
 		var ct = 0;
 		var default_tab = 0;
@@ -183,6 +217,52 @@ function ciniki_library_item() {
 		this.edit.formtabs.selected = default_tab;
 		this.edit.formtabs.visible = (ct>1?'yes':'no');
 
+		//
+		// Check if wanted is enabled
+		//
+		if( (M.curBusiness.modules['ciniki.library'].flags&0x08) > 0 ) {
+			this.edit.forms.music._owned.visible = 'yes';
+			this.edit.forms.book._owned.visible = 'yes';
+		} else {
+			this.edit.forms.music._owned.visible = 'no';
+			this.edit.forms.book._owned.visible = 'no';
+		}
+
+		//
+		// Check if ratings/priorities are enabled
+		//
+		if( (M.curBusiness.modules['ciniki.library'].flags&0x08) > 0 ) {
+			//
+			// Setup the employee ratings
+			//
+			var fields = {};
+			if( M.curBusiness.employees != null) {
+				var ct = 0;
+				var uid = 0;
+				for(i in M.curBusiness.employees) {
+					fields['user-' + i + '-rating'] = {'label':M.curBusiness.employees[i], 'type':'toggle', 'none':'yes', 'toggles':this.ratingToggles};
+					uid = i;
+					ct++;
+				}
+				if( ct == 1 ) {
+					this.edit.forms.music.ratings.label = '';
+					fields['user-' + uid + '-rating'].label = 'Your Rating';
+				} else {
+					this.edit.forms.music.ratings.label = 'Ratings';
+				}
+			}
+			this.edit.forms.music.ratings.fields = fields;
+			this.edit.forms.book.ratings.fields = fields;
+		} else {
+			this.edit.forms.music.ratings.fields = {};
+			this.edit.forms.book.ratings.fields = 'no';
+			this.edit.forms.music.ratings.active = 'no';
+			this.edit.forms.book.ratings.active = 'no';
+		}
+	
+		//
+		// Display the edit form
+		//
 		if( args.add != null ) {
 			this.editItem(cb, 0, args.add);
 		} else {
@@ -216,6 +296,11 @@ function ciniki_library_item() {
 					p.forms.book._genres.fields.genres.tags = genres;
 					p.forms.music._tags.fields.tags.tags = tags;
 					p.forms.book._tags.fields.tags.tags = tags;
+					if( (p.data.flags&0x02) == 2 ) {
+						M.ciniki_library_item.toggleOwnedWanted('wanted');
+					} else {
+						M.ciniki_library_item.toggleOwnedWanted('owned');
+					}
 					p.refresh();
 					p.show(cb);
 				});
@@ -244,10 +329,60 @@ function ciniki_library_item() {
 				p.forms.book._genres.fields.genres.tags = genres;
 				p.forms.music._tags.fields.tags.tags = tags;
 				p.forms.book._tags.fields.tags.tags = tags;
+				p.cb = cb;
+				if( (p.data.flags&0x02) == 2 ) {
+					M.ciniki_library_item.toggleOwnedWanted('wanted');
+				} else {
+					M.ciniki_library_item.toggleOwnedWanted('owned');
+				}
 				p.refresh();
 				p.show(cb);
 			});
 		}
+	};
+
+	this.toggleOwnedWanted = function(v, r) {
+		if( v == 'owned') {
+			this.edit.forms.music._owned.selected = 'owned';
+			this.edit.forms.book._owned.selected = 'owned';
+			this.edit.forms.music.purchased.visible = 'yes';
+			this.edit.forms.book.purchased.visible = 'yes';
+			if( this.edit.sections.purchased != null ) {
+				this.edit.sections.purchased.visible = 'yes';
+			}
+			this.edit.forms.music.ratings.label = 'Ratings';
+			this.edit.forms.book.ratings.label = 'Ratings';
+			for(i in this.edit.forms.music.ratings.fields) {
+				this.edit.forms.music.ratings.fields[i].toggles = this.ratingToggles;
+				this.edit.forms.book.ratings.fields[i].toggles = this.ratingToggles;
+			}
+			if( this.edit.sections.ratings != null && this.edit.sections.ratings.label != '' ) {
+				this.edit.sections.ratings.label = 'Ratings';
+			}
+		} else {
+			this.edit.forms.music._owned.selected = 'wanted';
+			this.edit.forms.book._owned.selected = 'wanted';
+			this.edit.forms.music.purchased.visible = 'hidden';
+			this.edit.forms.book.purchased.visible = 'hidden';
+			if( this.edit.sections.purchased != null ) {
+				this.edit.sections.purchased.visible = 'hidden';
+			}
+			this.edit.forms.music.ratings.label = 'Priority';
+			this.edit.forms.book.ratings.label = 'Priority';
+			for(i in this.edit.forms.music.ratings.fields) {
+				this.edit.forms.music.ratings.fields[i].toggles = this.priorityToggles;
+				this.edit.forms.book.ratings.fields[i].toggles = this.priorityToggles;
+			}
+			if( this.edit.sections.ratings != null && this.edit.sections.ratings.label != '' ) {
+				this.edit.sections.ratings.label = 'Priority';
+			}
+		}
+		if( r == null || r == 'yes' ) {
+			this.edit.refreshSection('_owned');
+			this.edit.refreshSection('ratings');
+			this.edit.refreshSection('purchased');
+		}
+//		this.edit.show();
 	};
 
 	this.saveItem = function() {

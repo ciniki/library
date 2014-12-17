@@ -1,0 +1,51 @@
+#
+# Description
+# -----------
+# This table stores the ratings and reviews for items in the library.  When the
+# item is wanted, the rating is used as priority.
+#
+# Fields
+# -------
+# id:				The database ID of the tag.
+# uuid:				The Universal Unique ID for the tag.
+# business_id:		The ID of the business the item is attached to.
+#
+# item_id:			The ID of the library item.
+#
+# user_id:			The ID of the owner/employee and their rating/review.
+#
+# rating:			The rating assigned by the user to the item. If the item is wanted
+#					this is treated as a priority.
+#
+#					1 - Aweful
+#					2 - Not that great
+#					3 - Okay
+#					4 - Liked it
+#					5 - Loved it
+#
+#					For priority:
+#					1 - Low
+#					2 - 
+#					3 -
+#					4 -
+#					5 - High
+#
+# review:			The review of the item.
+#
+# date_added:       The UTC date and time the tag was added.
+# last_updated:     The UTC date and time the tag was last updated.
+#
+create table ciniki_library_reviews (
+	id bigint not null auto_increment,
+	uuid char(36) not null,
+	business_id int not null,
+	item_id int not null,
+	user_id int not null,
+	rating tinyint unsigned not null,
+	review varchar(20000) not null,
+	date_added datetime not null,
+	last_updated datetime not null,
+	primary key (id),
+	unique index (item_id, user_id),
+	index sync (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

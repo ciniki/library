@@ -153,6 +153,18 @@ function ciniki_library_itemUpdate(&$ciniki) {
 	}
 
 	//
+	// Update the reviews/ratings
+	//
+	if( ($ciniki['business']['modules']['ciniki.library']['flags']&0x08) > 0 ) {
+		ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'itemUpdateReviews');
+		$rc = ciniki_library_itemUpdateReviews($ciniki, $args['business_id'], $args['item_id']);
+		if( $rc['stat'] != 'ok' ) {
+			ciniki_core_dbTransactionRollback($ciniki, 'ciniki.library');
+			return $rc;
+		}
+	}
+
+	//
 	// Commit the database changes
 	//
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.library');

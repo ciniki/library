@@ -42,11 +42,23 @@ function ciniki_library_objects($ciniki) {
 		'name'=>'Tag',
 		'sync'=>'yes',
 		'table'=>'ciniki_library_tags',
-			'fields'=>array(
+		'fields'=>array(
 			'item_id'=>array('ref'=>'ciniki.library.item'),
 			'tag_type'=>array(),
 			'tag_name'=>array(),
 			'permalink'=>array(),
+			),
+		'history_table'=>'ciniki_library_history',
+		);
+	$objects['review'] = array(
+		'name'=>'Review',
+		'sync'=>'yes',
+		'table'=>'ciniki_library_reviews',
+		'fields'=>array(
+			'item_id'=>array('ref'=>'ciniki.library.item'),
+			'user_id'=>array('ref'=>'ciniki.users.user'),
+			'rating'=>array(),
+			'review'=>array(),
 			),
 		'history_table'=>'ciniki_library_history',
 		);

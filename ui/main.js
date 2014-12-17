@@ -10,6 +10,14 @@ function ciniki_library_main() {
 	this.webFlags2 = {
 		'1':{'name':'Hidden'},
 		};
+	this.wantedPriorities = {
+		'0':'',
+		'1':'$',
+		'2':'$$',
+		'3':'$$$',
+		'4':'$$$$',
+		'5':'$$$$$',
+		};
 	this.init = function() {
 		//
 		// Setup the main panel to list the collection
@@ -29,8 +37,9 @@ function ciniki_library_main() {
 				'10':{'label':'Music', 'fn':'M.ciniki_library_main.switchMenuTab(\'10\');'},
 				'20':{'label':'Books', 'fn':'M.ciniki_library_main.switchMenuTab(\'20\');'},
 				}},
-			'menu':{'label':'', 'list':{
+			'menu':{'label':'', 'visible':'no', 'list':{
 				'wanted':{'label':'Wanted', 'visible':'no', 'fn':'M.ciniki_library_main.showWanted();'},
+				// IF MORE ADDED MAKE SURE TO UPDATE this.start
 				}},
 			'formats':{'label':'Formats', 'type':'simplegrid', 'num_cols':1,
 				'noData':'No formats found',
@@ -62,7 +71,22 @@ function ciniki_library_main() {
 			return true;
 		};
 		this.menu.liveSearchResultValue = function(s, f, i, j, d) {
-			return (d.item.author_display!=''?d.item.author_display+', ':'') + d.item.title + (d.item.wanted=='yes'?' [WANTED]':'');
+			var priority = '';
+			if( d.item.ratings != null && d.item.ratings.length > 0 ) {
+				if( M.curBusiness.numEmployees > 1 ) {
+					for(i in d.item.ratings) {
+						if( M.curBusiness.employees[d.item.ratings[i].rating.user_id] != null 
+							&& d.item.ratings[i].rating.rating > 0
+							) {
+							priority += ', ' + M.curBusiness.employees[d.item.ratings[i].rating.user_id] + ': ' + M.ciniki_library_main.wantedPriorities[d.item.ratings[0].rating.rating];
+						}
+					}
+				} else if( M.curBusiness.numEmployees == 1 ) {
+					priority = ', ' + M.ciniki_library_main.wantedPriorities[d.item.ratings[0].rating.rating];
+				}
+			}
+			return (d.item.author_display!=''?d.item.author_display+', ':'') + d.item.title 
+				+ (d.item.wanted=='yes'?' [WANTED' + (priority!=''?priority:'') + ']':'');
 		};
 		this.menu.liveSearchResultRowFn = function(s, f, i, j, d) {
 			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showMenu();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
@@ -137,16 +161,17 @@ function ciniki_library_main() {
 			};
 		this.list.liveSearchCb = function(s, i, v) {
 			if( v != '' ) {
-				M.api.getJSONBgCb('ciniki.library.itemSearch', {'business_id':M.curBusinessID, 'start_needle':v, 'limit':'15'},
+				M.api.getJSONBgCb('ciniki.library.itemSearch', {'business_id':M.curBusinessID, 'start_needle':v, 'flags':(M.ciniki_library_main.list.title=='Wanted'?2:0), 'limit':'15'},
 					function(rsp) {
 						M.ciniki_library_main.list.liveSearchShow(s, null, M.gE(M.ciniki_library_main.list.panelUID + '_' + s), rsp.items);
 					});
 			}
 			return true;
 		};
-		this.list.liveSearchResultValue = function(s, f, i, j, d) {
-			return (d.item.author_display!=''?d.item.author_display+', ':'') + d.item.title + (d.item.wanted=='yes'?' [WANTED]':'');
-		};
+		this.list.liveSearchResultValue = this.menu.liveSearchResultValue;
+//		this.list.liveSearchResultValue = function(s, f, i, j, d) {
+//			return (d.item.author_display!=''?d.item.author_display+', ':'') + d.item.title + (d.item.wanted=='yes'?' [WANTED]':'');
+//		};
 		this.list.liveSearchResultRowFn = function(s, f, i, j, d) {
 			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
 		};
@@ -213,6 +238,18 @@ function ciniki_library_main() {
 			this.menu.sections.tabs.tabs['20'] = {'label':'Books', 'fn':'M.ciniki_library_main.switchMenuTab(\'20\');'};
 		}
 		this.menu.sections.tabs.visible = (ct>1?'yes':'no');
+
+		//
+		// Check if Wanted is turned on
+		//
+		if( (M.curBusiness.modules['ciniki.library'].flags&0x04) > 0 ) {
+			this.menu.sections.menu.list.wanted.visible = 'yes';
+			this.menu.sections.menu.visible = 'yes';
+		} else {
+			this.menu.sections.menu.list.wanted.visible = 'no';
+			this.menu.sections.menu.visible = 'no';
+		}
+
 		this.showMenu(cb, default_tab);
 	}
 
