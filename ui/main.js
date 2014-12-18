@@ -169,9 +169,6 @@ function ciniki_library_main() {
 			return true;
 		};
 		this.list.liveSearchResultValue = this.menu.liveSearchResultValue;
-//		this.list.liveSearchResultValue = function(s, f, i, j, d) {
-//			return (d.item.author_display!=''?d.item.author_display+', ':'') + d.item.title + (d.item.wanted=='yes'?' [WANTED]':'');
-//		};
 		this.list.liveSearchResultRowFn = function(s, f, i, j, d) {
 			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
 		};
@@ -184,7 +181,22 @@ function ciniki_library_main() {
 			return this.data[s];
 		};
 		this.list.cellValue = function(s, i, j, d) {
+			if( this.title == 'Wanted' && j > 1 ) {
+				d.item[this.sections[s].dataMaps[j]]
+				var r = (d.item[this.sections[s].dataMaps[j]]!=null?d.item[this.sections[s].dataMaps[j]]:0);
+				var v = '';
+				for(k=1;k<6;k++) {
+					v += '<span class="' + (k>r?'rating_off':'rating_on') + '" onclick="event.stopPropagation();M.ciniki_library_main.updateRating(event,\'' + d.item.id + '\',\'' + this.sections[s].dataMaps[j] + '\',\'' + (k==r?0:k) + '\');">$</span>';
+//					v += '<span class="' + (k>r?'rating_off':'rating_on') + '" onclick="event.stopPropagation();M.ciniki_library_main.updateRating(event,\'' + d.item.id + '\',\'' + this.sections[s].dataMaps[j].replace(/.*-([0-9]+)-.*/,"$1") + '\',\'' + (k==r?0:k) + '\');">$</span>';
+				}
+				return v;
+			}
 			return d.item[this.sections[s].dataMaps[j]];
+		};
+		this.list.cellFn = function(s, i, j, d) {
+			if( this.title == 'Wanted' && j > 1 ) {
+				return 'event.stopPropagation();';
+			}
 		};
 		this.list.rowFn = function(s, i, d) {
 			return 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'item_id\':\'' + d.item.id + '\'});';
@@ -408,7 +420,6 @@ function ciniki_library_main() {
 			this.list.sections.items.headerValues = ['Author', 'Title'];
 			var col = 2;
 			for(i in M.curBusiness.employees) {
-				console.log(M.curBusiness.employees[i]);
 				this.list.sections.items.headerValues[col] = M.curBusiness.employees[i];
 				this.list.sections.items.sortTypes[col] = 'text';
 				this.list.sections.items.dataMaps[col] = 'user-' + i + '-rating';
@@ -427,6 +438,23 @@ function ciniki_library_main() {
 					p.show(cb);
 				});
 		}
+	};
 
+	this.updateRating = function(e, item_id, field, rating) {
+		var args = {'business_id':M.curBusinessID, 'item_id':item_id};
+		args[field] = rating;
+		M.api.getJSONCb('ciniki.library.itemUpdate', args, function(rsp) {
+			if( rsp.stat != 'ok' ) {
+				M.api.err(rsp);
+				return false;
+			}
+			var p = M.ciniki_library_main.list;
+			p.data = rsp;
+			var v = '';
+			for(k=1;k<6;k++) {
+				v += '<span class="' + (k>rating?'rating_off':'rating_on') + '" onclick="event.stopPropagation();M.ciniki_library_main.updateRating(event,\'' + item_id + '\',\'' + field + '\',\'' + (k==rating?0:k) + '\');">$</span>';
+			}
+			e.srcElement.parentNode.innerHTML = v;
+		});
 	};
 }

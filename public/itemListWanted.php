@@ -88,7 +88,8 @@ function ciniki_library_itemListWanted($ciniki) {
 				'owned', 'wanted')),
 		array('container'=>'ratings', 'fname'=>'user_id', 'name'=>'rating',
 			'fields'=>array('user_id', 'rating'),
-			'maps'=>array('rating'=>array('0'=>'', '1'=>'$', '2'=>'$$', '3'=>'$$$', '4'=>'$$$$', '5'=>'$$$$$'))),
+//			'maps'=>array('rating'=>array('0'=>'', '1'=>'$', '2'=>'$$', '3'=>'$$$', '4'=>'$$$$', '5'=>'$$$$$'))
+			),
 		));
 	if( $rc['stat'] != 'ok' ) {
 		return $rc;
