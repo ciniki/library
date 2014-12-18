@@ -386,8 +386,15 @@ function ciniki_library_item() {
 	};
 
 	this.saveItem = function() {
+		var f = 1;
+		if( this.edit.sections._owned.selected == 'wanted' ) {
+			f = 2;
+		}
 		if( this.edit.item_id > 0 ) {
 			var c = this.edit.serializeForm('no');
+			if( f != this.edit.data.flags ) {
+				c += '&flags=' + f;
+			}
 			if( c != '' ) {
 				M.api.postJSONCb('ciniki.library.itemUpdate', {'business_id':M.curBusinessID,
 					'item_id':this.edit.item_id}, c, function(rsp) {
@@ -402,6 +409,7 @@ function ciniki_library_item() {
 			}
 		} else {
 			var c = this.edit.serializeForm('yes');
+			c += 'flags=' + f + '&';
 			M.api.postJSONCb('ciniki.library.itemAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
