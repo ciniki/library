@@ -193,6 +193,17 @@ function ciniki_library_main() {
 			}
 			return d.item[this.sections[s].dataMaps[j]];
 		};
+		this.list.cellSortValue = function(s, i, j, d) {
+			if( j == 0 ) {
+				return d.item.author_sort;
+			}
+			if( j > 1 ) {
+				if( d.item[this.sections[s].dataMaps[j]] != null ) { 
+					return d.item[this.sections[s].dataMaps[j]];
+				}
+				return 0;
+			}
+		};
 		this.list.cellFn = function(s, i, j, d) {
 			if( this.title == 'Wanted' && j > 1 ) {
 				return 'event.stopPropagation();';
@@ -361,12 +372,12 @@ function ciniki_library_main() {
 		if( this.list.item_type == '10' ) {
 			this.list.sections.items.num_cols = 3;
 			this.list.sections.items.headerValues = ['Artist', 'Album', 'Year'];
-			this.list.sections.items.sortTypes = ['text', 'text', 'number'];
+			this.list.sections.items.sortTypes = ['alttext', 'text', 'number'];
 			this.list.sections.items.dataMaps = ['author_display', 'title', 'year'];
 		} else if( this.list.item_type == '20' ) {
 			this.list.sections.items.num_cols = 3;
 			this.list.sections.items.headerValues = ['Author', 'Title', 'Year'];
-			this.list.sections.items.sortTypes = ['text', 'text', 'number'];
+			this.list.sections.items.sortTypes = ['alttext', 'text', 'number'];
 			this.list.sections.items.dataMaps = ['author_display', 'title', 'year'];
 		}
 		if( this.list.list_type == 'genre' || this.list.list_type == 'tag' ) {
@@ -401,7 +412,7 @@ function ciniki_library_main() {
 			this.list.sections.items.headerValues[2] = 'Place';
 			this.list.sections.items.headerValues[3] = 'Date';
 			this.list.sections.items.headerValues[4] = 'Price';
-			this.list.sections.items.sortTypes = ['text', 'text', 'number', 'text', 'date', 'number'];
+			this.list.sections.items.sortTypes = ['alttext', 'text', 'number', 'text', 'date', 'number'];
 			this.list.sections.items.dataMaps = ['author_display', 'title', 'purchased_place', 'purchased_date', 'purchased_price'];
 			M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
 				'item_type':this.list.item_type, 'flags':0x01, 'purchased_place':encodeURIComponent(this.list.purchased_place)}, function(rsp) {
@@ -421,7 +432,7 @@ function ciniki_library_main() {
 			var col = 2;
 			for(i in M.curBusiness.employees) {
 				this.list.sections.items.headerValues[col] = M.curBusiness.employees[i];
-				this.list.sections.items.sortTypes[col] = 'text';
+				this.list.sections.items.sortTypes[col] = 'altnumber';
 				this.list.sections.items.dataMaps[col] = 'user-' + i + '-rating';
 				col++;
 			}
