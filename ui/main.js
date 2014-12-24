@@ -52,13 +52,9 @@ function ciniki_library_main() {
 				},
 			'purchased_places':{'label':'Purchased', 'type':'simplegrid', 'num_cols':1,
 				'noData':'No places found',
+				'addTxt':'more',
+				'addFn':'M.ciniki_library_main.showPurchased(\'M.ciniki_library_main.showMenu();\',M.ciniki_library_main.menu.item_type);',
 				},
-//			'type_10':{'label':'Music', 'visible':'no', 'type':'simplegrid', 'num_cols':3,
-//				'headerValues':['Artist/Band', 'Album', 'Year'],
-//				},
-//			'type_20':{'label':'Books', 'visible':'no', 'type':'simplegrid', 'num_cols':3,
-//				'headerValues':['Author', 'Title', 'Year'],
-//				},
 			};
 		this.menu.listby = 'category';
 		this.menu.liveSearchCb = function(s, i, v) {
@@ -227,6 +223,51 @@ function ciniki_library_main() {
 //		}
 		this.list.addButton('add', 'Add', 'M.startApp(\'ciniki.library.item\',null,\'M.ciniki_library_main.showList();\',\'mc\',{\'add\':M.ciniki_library_main.list.item_type});');
 		this.list.addClose('Back');
+
+		//
+		// The panel for display the list of places and amount spent
+		//
+		this.purchased = new M.panel('Purchased',
+			'ciniki_library_main', 'purchased',
+			'mc', 'medium', 'sectioned', 'ciniki.library.main.purchased');
+		this.purchased.data = {};
+		this.purchased.item_type = 10;
+		this.purchased.sections = {
+			'places':{'label':'Purchased', 'type':'simplegrid', 'num_cols':2,
+				'headerValues':['Place', 'Amount'],
+				'sortable':'yes',
+				'sortTypes':['text', 'altnumber'],
+				'noData':'No places found',
+				},
+			};
+		this.purchased.sectionData = function(s) { 
+			return this.data[s];
+		};
+		this.purchased.cellValue = function(s, i, j, d) {
+			switch(j) {
+				case 0: return d.place.name;
+				case 1: return d.place.total_amount;
+			}
+		};
+		this.purchased.cellSortValue = function(s, i, j, d) {
+			switch(j) {
+				case 0: return d.place.name;
+				case 1: return d.place.total_amount.replace(/\$/, '');
+			}
+		};
+		this.purchased.rowFn = function(s, i, d) {
+			return 'M.ciniki_library_main.showList(\'M.ciniki_library_main.showPurchased();\',\'' + escape(d.place.name) + '\',\'purchased_place\',\'' + M.ciniki_library_main.purchased.item_type + '\',null,null,null,\'' + escape(d.place.name) + '\');'
+		};
+		this.purchased.footerValue = function(s, i, d) {
+			if( this.data.totals != null ) {
+				switch(i) {
+					case 1: return this.data.totals.total_amount;
+				}
+				return '';
+			}
+			return null;
+		};
+		this.purchased.addClose('Back');
 	}
 
 	this.start = function(cb, appPrefix, aG) {
@@ -467,5 +508,20 @@ function ciniki_library_main() {
 			}
 			e.srcElement.parentNode.innerHTML = v;
 		});
+	};
+
+	this.showPurchased = function(cb, item_type) {
+		if( item_type != null ) { this.purchased.item_type = item_type; }
+		M.api.getJSONCb('ciniki.library.purchasedPlaces', {'business_id':M.curBusinessID, 
+			'item_type':this.purchased.item_type}, function(rsp) {
+				if( rsp.stat != 'ok' ) {
+					M.api.err(rsp);
+					return false;
+				}
+				var p = M.ciniki_library_main.purchased;
+				p.data = rsp;
+				p.refresh();
+				p.show(cb);
+			});
 	};
 }
