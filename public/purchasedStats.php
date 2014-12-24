@@ -6,7 +6,7 @@
 // Returns
 // -------
 //
-function ciniki_library_purchasedPlaces($ciniki) {
+function ciniki_library_purchasedStats($ciniki) {
     //  
     // Find all the required and optional arguments
     //  
@@ -14,11 +14,6 @@ function ciniki_library_purchasedPlaces($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
         'item_type'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Item Type'), 
-        'item_format'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Item Format'), 
-        'tag_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Type'), 
-        'tag_permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Permalink'), 
-        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'), 
-        'purchased_place'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Purchased Place'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -30,7 +25,7 @@ function ciniki_library_purchasedPlaces($ciniki) {
     // check permission to run this function for this business
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.purchasedPlaces'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.purchasedStats'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   

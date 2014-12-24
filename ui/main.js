@@ -512,7 +512,7 @@ function ciniki_library_main() {
 
 	this.showPurchased = function(cb, item_type) {
 		if( item_type != null ) { this.purchased.item_type = item_type; }
-		M.api.getJSONCb('ciniki.library.purchasedPlaces', {'business_id':M.curBusinessID, 
+		M.api.getJSONCb('ciniki.library.purchasedStats', {'business_id':M.curBusinessID, 
 			'item_type':this.purchased.item_type}, function(rsp) {
 				if( rsp.stat != 'ok' ) {
 					M.api.err(rsp);
