@@ -18,6 +18,7 @@ function ciniki_library_itemList($ciniki) {
         'tag_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Type'), 
         'tag_permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Permalink'), 
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'), 
+        'location'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'), 
         'purchased_place'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Purchased Place'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -116,6 +117,15 @@ function ciniki_library_itemList($ciniki) {
 			. "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
 			. "AND (flags&0x01) = 1 "
 			. "AND item_format = '" . ciniki_core_dbQuote($ciniki, $args['item_format']) . "' "
+			. "";
+		$strsql .= "ORDER BY author_sort, title COLLATE latin1_general_cs "
+			. "";
+	} elseif( isset($args['location']) ) {
+		$strsql .= "FROM ciniki_library_items "
+			. "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+			. "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
+			. "AND (flags&0x01) = 1 "
+			. "AND location = '" . ciniki_core_dbQuote($ciniki, $args['location']) . "' "
 			. "";
 		$strsql .= "ORDER BY author_sort, title COLLATE latin1_general_cs "
 			. "";
