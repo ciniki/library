@@ -30,7 +30,7 @@ function ciniki_library_itemListWanted($ciniki) {
     // check permission to run this function for this business
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.itemList'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.itemListWanted'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
