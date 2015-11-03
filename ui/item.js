@@ -49,7 +49,7 @@ function ciniki_library_item() {
 		this.edit.formtabs = {'label':'', 'field':'item_type', 'tabs':{}};
 		this.edit.forms = {};
 		this.edit.forms.music = {
-			'_image':{'label':'', 'aside':'yes', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
 			'details':{'label':'', 'aside':'yes', 'fields':{
@@ -93,7 +93,7 @@ function ciniki_library_item() {
 				}},
 		};
 		this.edit.forms.book = {
-			'_image':{'label':'', 'aside':'yes', 'fields':{
+			'_image':{'label':'', 'aside':'yes', 'type':'imageform', 'fields':{
 				'primary_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no'},
 				}},
 			'details':{'label':'', 'aside':'yes', 'fields':{
