@@ -48,6 +48,6 @@ function ciniki_library_itemHistory($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
     return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.library', 'ciniki_library_history', 
-        $args['business_id'], 'ciniki_library', $args['item_id'], $args['field']);
+        $args['business_id'], 'ciniki_library_items', $args['item_id'], $args['field']);
 }
 ?>
