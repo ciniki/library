@@ -5,89 +5,89 @@
 #
 # Fields
 # -------
-# id:				The database ID of the tag.
-# uuid:				The Universal Unique ID for the tag.
-# business_id:		The ID of the business the item is attached to.
+# id:               The database ID of the tag.
+# uuid:             The Universal Unique ID for the tag.
+# business_id:      The ID of the business the item is attached to.
 #
-# item_type:		The type of item:
+# item_type:        The type of item:
 #
-#					10 - Music
-#					20 - Book
+#                   10 - Music
+#                   20 - Book
 # 
-# format:			The format of the version
+# item_format:      The format of the version
 #
-#					11 - Vinyl
-#					12 - CD
-#					15 - Digital
-#					20 - mp3
-#					21 - flac
+#                   11 - Vinyl
+#                   12 - CD
+#                   15 - Digital
+#                   20 - mp3
+#                   21 - flac
 #
-#					30 - Hardcover
-#					31 - Trade Paperback
-#					32 - Mass Paperback
-#					40 - epub
-#					41 - mobi
-#					42 - 
+#                   30 - Hardcover
+#                   31 - Trade Paperback
+#                   32 - Mass Paperback
+#                   40 - epub
+#                   41 - mobi
+#                   42 - 
 #
-# title:			The title of the book, album, etc
-# permalink:		The permalink of the item
+# title:            The title of the book, album, etc
+# permalink:        The permalink of the item
 #
-# author_display:	The display name of the artist/author of the music/book.
-# author_sort:		The sort name of the author/artist/band, which should last name, band name with The removed.
+# author_display:   The display name of the artist/author of the music/book.
+# author_sort:      The sort name of the author/artist/band, which should last name, band name with The removed.
 #
-# flags:			Different flags for the item.
+# flags:            Different flags for the item.
 #
-#					0x01 - Item is owned and in collection.
-#					0x02 - Item is in the wanted/wishlist.
+#                   0x01 - Item is owned and in collection.
+#                   0x02 - Item is in the wanted/wishlist.
 #
-# isbn:				The ISBN number for books.
+# isbn:             The ISBN number for books.
 #
-# year:				The year published/released.
+# year:             The year published/released.
 #
-# location:			The physical location of the item Vinyl/CD/Books.
+# location:         The physical location of the item Vinyl/CD/Books.
 #
-# synopsis:			The brief description of the item
+# synopsis:         The brief description of the item
 #
-# description:		The long description of the item.
+# description:      The long description of the item.
 #
-# primary_image_id:			The cover art
-# primary_image_caption:	The caption if any for the cover art
+# primary_image_id:         The cover art
+# primary_image_caption:    The caption if any for the cover art
 #
-# notes:			The notes for the item.
+# notes:            The notes for the item.
 #
-# purchased_date:	The date the item was purchased.
-# purchased_price:	The price paid for the item.
-# purchased_place:	The place the item was purchased.
+# purchased_date:   The date the item was purchased.
+# purchased_price:  The price paid for the item.
+# purchased_place:  The place the item was purchased.
 #
 # date_added:       The UTC date and time the tag was added.
 # last_updated:     The UTC date and time the tag was last updated.
 #
 create table ciniki_library_items (
-	id bigint not null auto_increment,
-	uuid char(36) not null,
-	business_id int not null,
-	item_type tinyint unsigned not null,
-	item_format tinyint unsigned not null,
-	title varchar(250) not null,
-	permalink varchar(250) not null,
-	author_display varchar(250) not null,
-	author_sort varchar(250) not null,
-	flags smallint unsigned not null,
-	isbn varchar(200) not null,
-	year varchar(50) not null,
-	location varchar(200) not null,
-	synopsis varchar(6000) not null,
-	description varchar(20000) not null,
-	primary_image_id int not null,
-	primary_image_caption varchar(250) not null,
-	notes varchar(10000) not null,
-	purchased_date date not null,
-	purchased_price decimal(19,4) not null,
-	purchased_place varchar(200) not null,
-	date_added datetime not null,
-	last_updated datetime not null,
-	primary key (id),
-	index (title),
-	index (permalink),
-	index sync (business_id, uuid, last_updated)
+    id bigint not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    item_type tinyint unsigned not null,
+    item_format tinyint unsigned not null,
+    title varchar(250) not null,
+    permalink varchar(250) not null,
+    author_display varchar(250) not null,
+    author_sort varchar(250) not null,
+    flags smallint unsigned not null,
+    isbn varchar(200) not null,
+    year varchar(50) not null,
+    location varchar(200) not null,
+    synopsis varchar(6000) not null,
+    description varchar(20000) not null,
+    primary_image_id int not null,
+    primary_image_caption varchar(250) not null,
+    notes varchar(10000) not null,
+    purchased_date date not null,
+    purchased_price decimal(19,4) not null,
+    purchased_place varchar(200) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    index (title),
+    index (permalink),
+    index sync (business_id, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

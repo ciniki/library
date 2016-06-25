@@ -8,8 +8,8 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id: 		The ID of the business to remove the item from.
-// item_id:				The ID of the item to be removed.
+// business_id:         The ID of the business to remove the item from.
+// item_id:             The ID of the item to be removed.
 // 
 // Returns
 // -------
@@ -38,64 +38,64 @@ function ciniki_library_itemDelete(&$ciniki) {
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
-	$modules = $rc['modules'];
+    $modules = $rc['modules'];
 
-	//
-	// Get the uuid of the item to be deleted
-	//
-	$strsql = "SELECT uuid FROM ciniki_library_items "
-		. "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-		. "AND id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
-		. "";
-	$rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.library', 'item');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
-	if( !isset($rc['item']) ) {
-		return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2099', 'msg'=>'Unable to find existing item'));
-	}
-	$uuid = $rc['item']['uuid'];
+    //
+    // Get the uuid of the item to be deleted
+    //
+    $strsql = "SELECT uuid FROM ciniki_library_items "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.library', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( !isset($rc['item']) ) {
+        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2099', 'msg'=>'Unable to find existing item'));
+    }
+    $uuid = $rc['item']['uuid'];
 
-	//  
-	// Turn off autocommit
-	// 
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDelete');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbObjectDelete');
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
-	$rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.library');
-	if( $rc['stat'] != 'ok' ) { 
-		return $rc;
-	}   
+    //  
+    // Turn off autocommit
+    // 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbDelete');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbObjectDelete');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+    $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.library');
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }   
 
-	//
-	// Remove the item
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-	$rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.library.item',
-		$args['item_id'], $uuid);
-	if( $rc['stat'] != 'ok' ) {
-		ciniki_core_dbTransactionRollback($ciniki, 'ciniki.library');
-		return $rc;
-	}
-	
-	//
-	// Commit the database changes
-	//
+    //
+    // Remove the item
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+    $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.library.item',
+        $args['item_id'], $uuid);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.library');
+        return $rc;
+    }
+    
+    //
+    // Commit the database changes
+    //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.library');
-	if( $rc['stat'] != 'ok' ) {
-		return $rc;
-	}
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
 
-	//
-	// Update the last_change date in the business modules
-	// Ignore the result, as we don't want to stop user updates if this fails.
-	//
-	ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-	ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'library');
+    //
+    // Update the last_change date in the business modules
+    // Ignore the result, as we don't want to stop user updates if this fails.
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
+    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'library');
 
-	return array('stat'=>'ok');
+    return array('stat'=>'ok');
 }
 ?>
