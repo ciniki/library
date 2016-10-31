@@ -1038,7 +1038,7 @@ function ciniki_library_main() {
             for(k=1;k<6;k++) {
                 v += '<span class="' + (k>rating?'rating_off':'rating_on') + '" onclick="event.stopPropagation();M.ciniki_library_main.updateRating(event,\'' + item_id + '\',\'' + field + '\',\'' + (k==rating?0:k) + '\');">$</span>';
             }
-            e.srcElement.parentNode.innerHTML = v;
+            e.target.parentNode.innerHTML = v;
         });
     };
 }
