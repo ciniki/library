@@ -52,7 +52,7 @@ function ciniki_library_itemDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['item']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2099', 'msg'=>'Unable to find existing item'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.library.5', 'msg'=>'Unable to find existing item'));
     }
     $uuid = $rc['item']['uuid'];
 

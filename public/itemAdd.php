@@ -77,7 +77,7 @@ function ciniki_library_itemAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2096', 'msg'=>'You already have a item with this title, please choose another title.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.library.4', 'msg'=>'You already have a item with this title, please choose another title.'));
     }
 
     //  

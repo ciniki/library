@@ -69,7 +69,7 @@ function ciniki_library_itemUpdate(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['item']) ) {
-        return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2100', 'msg'=>'Item not found'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.library.7', 'msg'=>'Item not found'));
     }
     $item = $rc['item'];
 
@@ -82,7 +82,7 @@ function ciniki_library_itemUpdate(&$ciniki) {
         } elseif( isset($args['title']) ) {
             $args['permalink'] = ciniki_core_makePermalink($ciniki, $item['author_display'] . '-' . $args['title']);
         } else {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2101', 'msg'=>'Unable to determine permalink.'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.library.8', 'msg'=>'Unable to determine permalink.'));
         }
         //
         // Make sure the permalink is unique
@@ -98,7 +98,7 @@ function ciniki_library_itemUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('pkg'=>'ciniki', 'code'=>'2095', 'msg'=>'You already have a item with this name, please choose another name'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.library.9', 'msg'=>'You already have a item with this name, please choose another name'));
         }
     }
 

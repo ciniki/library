@@ -92,7 +92,7 @@ function ciniki_library_itemGet($ciniki) {
         return $rc;
     }
     if( !isset($rc['items']) ) {
-        return array('stat'=>'ok', 'err'=>array('pkg'=>'ciniki', 'code'=>'2097', 'msg'=>'Unable to find item'));
+        return array('stat'=>'ok', 'err'=>array('code'=>'ciniki.library.6', 'msg'=>'Unable to find item'));
     }
     $item = $rc['items'][0]['item'];
 
