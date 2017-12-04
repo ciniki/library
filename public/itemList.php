@@ -12,7 +12,7 @@ function ciniki_library_itemList($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'item_type'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Item Type'), 
         'item_format'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Item Format'), 
         'tag_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tag Type'), 
@@ -28,16 +28,16 @@ function ciniki_library_itemList($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.itemList'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['tnid'], 'ciniki.library.itemList'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -52,7 +52,7 @@ function ciniki_library_itemList($ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki);
 
     //
-    // Get the number of faqs in each status for the business, 
+    // Get the number of faqs in each status for the tenant, 
     // if no rows found, then return empty array
     //
     $strsql = "SELECT ciniki_library_items.id, "
@@ -72,12 +72,12 @@ function ciniki_library_itemList($ciniki) {
         && isset($args['tag_permalink']) && $args['tag_permalink'] != '' 
         ) {
         $strsql .= "FROM ciniki_library_tags, ciniki_library_items "
-            . "WHERE ciniki_library_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_library_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_library_tags.tag_type = '" . ciniki_core_dbQuote($ciniki, $args['tag_type']) . "' "
             . "AND ciniki_library_tags.permalink = '" . ciniki_core_dbQuote($ciniki, $args['tag_permalink']) . "' "
             . "AND ciniki_library_tags.item_id = ciniki_library_items.id "
             . "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
-            . "AND ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         if( isset($args['flags']) && $args['flags'] != '' && intval($args['flags']) > 0 ) {
             $strsql .= "AND (ciniki_library_items.flags&" . intval($args['flags']) . ") > 0 ";
@@ -91,10 +91,10 @@ function ciniki_library_itemList($ciniki) {
             . "FROM ciniki_library_items "
             . "LEFT JOIN ciniki_library_tags ON ("
                 . "ciniki_library_tags.item_id = ciniki_library_items.id "
-                . "AND ciniki_library_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_library_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND ciniki_library_tags.tag_type = '" . ciniki_core_dbQuote($ciniki, $args['tag_type']) . "' "
                 . ") "
-            . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' ";
         if( isset($args['flags']) && $args['flags'] != '' && intval($args['flags']) > 0 ) {
             $strsql .= "AND (ciniki_library_items.flags&" . intval($args['flags']) . ") > 0 ";
@@ -105,7 +105,7 @@ function ciniki_library_itemList($ciniki) {
 
     } elseif( isset($args['flags']) && ($args['flags']&0x02) > 0 ) {
         $strsql .= "FROM ciniki_library_items "
-            . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
             . "AND (flags&0x02) > 0 "
             . "";
@@ -113,7 +113,7 @@ function ciniki_library_itemList($ciniki) {
             . "";
     } elseif( isset($args['item_format']) && $args['item_format'] != '' ) {
         $strsql .= "FROM ciniki_library_items "
-            . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
             . "AND (flags&0x01) = 1 "
             . "AND item_format = '" . ciniki_core_dbQuote($ciniki, $args['item_format']) . "' "
@@ -122,7 +122,7 @@ function ciniki_library_itemList($ciniki) {
             . "";
     } elseif( isset($args['location']) ) {
         $strsql .= "FROM ciniki_library_items "
-            . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
             . "AND (flags&0x01) = 1 "
             . "AND location = '" . ciniki_core_dbQuote($ciniki, $args['location']) . "' "
@@ -131,7 +131,7 @@ function ciniki_library_itemList($ciniki) {
             . "";
     } elseif( isset($args['purchased_place']) ) {
         $strsql .= "FROM ciniki_library_items "
-            . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
             . "AND (flags&0x01) = 1 "
             . "AND purchased_place = '" . ciniki_core_dbQuote($ciniki, $args['purchased_place']) . "' "
@@ -140,7 +140,7 @@ function ciniki_library_itemList($ciniki) {
             . "";
     } else {
         $strsql .= "FROM ciniki_library_items "
-            . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
             . "";
         if( isset($args['flags']) && $args['flags'] != '' && intval($args['flags']) > 0 ) {

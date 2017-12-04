@@ -8,21 +8,21 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the item from.
+// tnid:         The ID of the tenant to get the item from.
 // 
 // Returns
 // -------
 //
-function ciniki_library_loadTags($ciniki, $business_id, $item_type) {
+function ciniki_library_loadTags($ciniki, $tnid, $item_type) {
     //
     // Get the list of genres
     //
     $strsql = "SELECT DISTINCT CONCAT_WS('-', tag_type, tag_name) AS fname, tag_type, tag_name "
         . "FROM ciniki_library_items, ciniki_library_tags "
-        . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_library_items.item_type = '" . ciniki_core_dbQuote($ciniki, $item_type) . "' "
         . "AND ciniki_library_items.id = ciniki_library_tags.item_id "
-        . "AND ciniki_library_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND ciniki_library_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     $strsql .= "GROUP BY fname ";
     $strsql .= "ORDER BY tag_type, tag_name ";

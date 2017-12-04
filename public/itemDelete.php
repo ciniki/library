@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to remove the item from.
+// tnid:         The ID of the tenant to remove the item from.
 // item_id:             The ID of the item to be removed.
 // 
 // Returns
@@ -21,7 +21,7 @@ function ciniki_library_itemDelete(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'item_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Item'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -31,10 +31,10 @@ function ciniki_library_itemDelete(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.itemDelete'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['tnid'], 'ciniki.library.itemDelete'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -44,7 +44,7 @@ function ciniki_library_itemDelete(&$ciniki) {
     // Get the uuid of the item to be deleted
     //
     $strsql = "SELECT uuid FROM ciniki_library_items "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.library', 'item');
@@ -74,7 +74,7 @@ function ciniki_library_itemDelete(&$ciniki) {
     // Remove the item
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-    $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.library.item',
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.library.item',
         $args['item_id'], $uuid);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.library');
@@ -90,11 +90,11 @@ function ciniki_library_itemDelete(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'library');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'library');
 
     return array('stat'=>'ok');
 }

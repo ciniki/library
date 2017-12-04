@@ -103,7 +103,7 @@ function ciniki_library_main() {
     this.menu.listby = 'category';
     this.menu.liveSearchCb = function(s, i, v) {
         if( v != '' ) {
-            M.api.getJSONBgCb('ciniki.library.itemSearch', {'business_id':M.curBusinessID, 'start_needle':v, 'limit':'15'},
+            M.api.getJSONBgCb('ciniki.library.itemSearch', {'tnid':M.curTenantID, 'start_needle':v, 'limit':'15'},
                 function(rsp) {
                     M.ciniki_library_main.menu.liveSearchShow(s, null, M.gE(M.ciniki_library_main.menu.panelUID + '_' + s), rsp.items);
                 });
@@ -113,15 +113,15 @@ function ciniki_library_main() {
     this.menu.liveSearchResultValue = function(s, f, i, j, d) {
         var priority = '';
         if( d.item.ratings != null && d.item.ratings.length > 0 ) {
-            if( M.curBusiness.numEmployees > 1 ) {
+            if( M.curTenant.numEmployees > 1 ) {
                 for(i in d.item.ratings) {
-                    if( M.curBusiness.employees[d.item.ratings[i].rating.user_id] != null 
+                    if( M.curTenant.employees[d.item.ratings[i].rating.user_id] != null 
                         && d.item.ratings[i].rating.rating > 0
                         ) {
-                        priority += ', ' + M.curBusiness.employees[d.item.ratings[i].rating.user_id] + ': ' + M.ciniki_library_main.wantedPriorities[d.item.ratings[0].rating.rating];
+                        priority += ', ' + M.curTenant.employees[d.item.ratings[i].rating.user_id] + ': ' + M.ciniki_library_main.wantedPriorities[d.item.ratings[0].rating.rating];
                     }
                 }
-            } else if( M.curBusiness.numEmployees == 1 ) {
+            } else if( M.curTenant.numEmployees == 1 ) {
                 priority = ', ' + M.ciniki_library_main.wantedPriorities[d.item.ratings[0].rating.rating];
             }
         }
@@ -221,7 +221,7 @@ function ciniki_library_main() {
         }
         this.data = {};
         this.list_type = '';
-        M.api.getJSONCb('ciniki.library.itemStats', {'business_id':M.curBusinessID}, function(rsp) {
+        M.api.getJSONCb('ciniki.library.itemStats', {'tnid':M.curTenantID}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -382,7 +382,7 @@ function ciniki_library_main() {
         };
     this.list.liveSearchCb = function(s, i, v) {
         if( v != '' ) {
-            M.api.getJSONBgCb('ciniki.library.itemSearch', {'business_id':M.curBusinessID, 'start_needle':v, 'flags':(M.ciniki_library_main.list.title=='Wanted'?2:0), 'limit':'15'},
+            M.api.getJSONBgCb('ciniki.library.itemSearch', {'tnid':M.curTenantID, 'start_needle':v, 'flags':(M.ciniki_library_main.list.title=='Wanted'?2:0), 'limit':'15'},
                 function(rsp) {
                     M.ciniki_library_main.list.liveSearchShow(s, null, M.gE(M.ciniki_library_main.list.panelUID + '_' + s), rsp.items);
                 });
@@ -490,7 +490,7 @@ function ciniki_library_main() {
     };
     this.purchased.open = function(cb, item_type) {
         if( item_type != null ) { this.item_type = item_type; }
-        M.api.getJSONCb('ciniki.library.purchasedStats', {'business_id':M.curBusinessID, 'item_type':this.item_type}, function(rsp) {
+        M.api.getJSONCb('ciniki.library.purchasedStats', {'tnid':M.curTenantID, 'item_type':this.item_type}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -531,7 +531,7 @@ function ciniki_library_main() {
             p.sections.items.dataMaps = ['author_display', 'title', 'year'];
         }
         if( p.list_type == 'genre' || p.list_type == 'tag' ) {
-            M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
+            M.api.getJSONCb('ciniki.library.itemList', {'tnid':M.curTenantID, 
                 'item_type':p.item_type, 'tag_type':p.tag_type, 
                 'tag_permalink':p.tag_permalink, 'flags':0x01}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
@@ -546,7 +546,7 @@ function ciniki_library_main() {
                 });
         } 
         else if( p.list_type == 'format' ) {
-            M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
+            M.api.getJSONCb('ciniki.library.itemList', {'tnid':M.curTenantID, 
                 'item_type':p.item_type, 'flags':0x01, 'item_format':p.item_format}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -560,7 +560,7 @@ function ciniki_library_main() {
                 });
         } 
         else if( p.list_type == 'location' ) {
-            M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
+            M.api.getJSONCb('ciniki.library.itemList', {'tnid':M.curTenantID, 
                 'item_type':p.item_type, 'flags':0x01, 'location':encodeURIComponent(p.location)}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -580,7 +580,7 @@ function ciniki_library_main() {
             p.sections.items.headerValues[4] = 'Price';
             p.sections.items.sortTypes = ['alttext', 'text', 'number', 'text', 'date', 'number'];
             p.sections.items.dataMaps = ['author_display', 'title', 'purchased_place', 'purchased_date', 'purchased_price'];
-            M.api.getJSONCb('ciniki.library.itemList', {'business_id':M.curBusinessID, 
+            M.api.getJSONCb('ciniki.library.itemList', {'tnid':M.curTenantID, 
                 'item_type':p.item_type, 'flags':0x01, 'purchased_place':encodeURIComponent(p.purchased_place)}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -597,14 +597,14 @@ function ciniki_library_main() {
             p.sections.items.num_cols = 3;
             p.sections.items.headerValues = ['Author', 'Title'];
             var col = 2;
-            for(i in M.curBusiness.employees) {
-                p.sections.items.headerValues[col] = M.curBusiness.employees[i];
+            for(i in M.curTenant.employees) {
+                p.sections.items.headerValues[col] = M.curTenant.employees[i];
                 p.sections.items.sortTypes[col] = 'altnumber';
                 p.sections.items.dataMaps[col] = 'user-' + i + '-rating';
                 col++;
             }
             p.sections.items.num_cols = col;
-            M.api.getJSONCb('ciniki.library.itemListWanted', {'business_id':M.curBusinessID, 
+            M.api.getJSONCb('ciniki.library.itemListWanted', {'tnid':M.curTenantID, 
                 'item_type':p.item_type}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -727,7 +727,7 @@ function ciniki_library_main() {
     };
     this.edit.liveSearchCb = function(s, i, value) {
         if( i == 'author_display' || i == 'author_sort' || i == 'purchased_place') {
-            var rsp = M.api.getJSONBgCb('ciniki.library.itemSearchField', {'business_id':M.curBusinessID, 'field':i, 'start_needle':value, 'limit':15},
+            var rsp = M.api.getJSONBgCb('ciniki.library.itemSearchField', {'tnid':M.curTenantID, 'field':i, 'start_needle':value, 'limit':15},
                 function(rsp) {
                     M.ciniki_library_main.edit.liveSearchShow(s, i, M.gE(M.ciniki_library_main.edit.panelUID + '_' + i), rsp.results);
                 });
@@ -757,7 +757,7 @@ function ciniki_library_main() {
         this.removeLiveSearch(s, fid);
     };
     this.edit.fieldHistoryArgs = function(s, i) {
-        return {'method':'ciniki.library.itemHistory', 'args':{'business_id':M.curBusinessID, 'item_id':this.item_id, 'field':i}};
+        return {'method':'ciniki.library.itemHistory', 'args':{'tnid':M.curTenantID, 'item_id':this.item_id, 'field':i}};
     };
     this.edit.addDropImage = function(iid) {
         M.ciniki_library_main.edit.setFieldValue('primary_image_id', iid, null, null);
@@ -773,7 +773,7 @@ function ciniki_library_main() {
         if( this.item_id > 0 ) {
             this.forms.music._buttons.buttons.delete.visible = 'yes';
             this.forms.book._buttons.buttons.delete.visible = 'yes';
-            M.api.getJSONCb('ciniki.library.itemGet', {'business_id':M.curBusinessID,
+            M.api.getJSONCb('ciniki.library.itemGet', {'tnid':M.curTenantID,
                 'item_id':this.item_id, 'tags':'yes'}, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
@@ -806,7 +806,7 @@ function ciniki_library_main() {
             this.forms.music._buttons.buttons.delete.visible = 'no';
             this.forms.book._buttons.buttons.delete.visible = 'no';
             // Get tags
-            M.api.getJSONCb('ciniki.library.itemTags', {'business_id':M.curBusinessID, 
+            M.api.getJSONCb('ciniki.library.itemTags', {'tnid':M.curTenantID, 
                 'item_type':this.item_type}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -891,7 +891,7 @@ function ciniki_library_main() {
                 c += '&flags=' + f;
             }
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.library.itemUpdate', {'business_id':M.curBusinessID,
+                M.api.postJSONCb('ciniki.library.itemUpdate', {'tnid':M.curTenantID,
                     'item_id':this.item_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
                             M.api.err(rsp);
@@ -905,7 +905,7 @@ function ciniki_library_main() {
         } else {
             var c = this.serializeForm('yes');
             c += 'flags=' + f + '&';
-            M.api.postJSONCb('ciniki.library.itemAdd', {'business_id':M.curBusinessID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.library.itemAdd', {'tnid':M.curTenantID}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -917,7 +917,7 @@ function ciniki_library_main() {
     this.edit.remove = function() {
         if( this.item_id <= 0 ) { return false; }
         if( confirm("Are you sure you want to remove this item from the library?") ) {
-            M.api.getJSONCb('ciniki.library.itemDelete', {'business_id':M.curBusinessID, 'item_id':this.item_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.library.itemDelete', {'tnid':M.curTenantID, 'item_id':this.item_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
@@ -998,11 +998,11 @@ function ciniki_library_main() {
             // Setup the employee ratings
             //
             var fields = {};
-            if( M.curBusiness.employees != null) {
+            if( M.curTenant.employees != null) {
                 var ct = 0;
                 var uid = 0;
-                for(i in M.curBusiness.employees) {
-                    fields['user-' + i + '-rating'] = {'label':M.curBusiness.employees[i], 'type':'toggle', 'none':'yes', 'toggles':this.ratingToggles};
+                for(i in M.curTenant.employees) {
+                    fields['user-' + i + '-rating'] = {'label':M.curTenant.employees[i], 'type':'toggle', 'none':'yes', 'toggles':this.ratingToggles};
                     uid = i;
                     ct++;
                 }
@@ -1025,7 +1025,7 @@ function ciniki_library_main() {
     }
 
     this.updateRating = function(e, item_id, field, rating) {
-        var args = {'business_id':M.curBusinessID, 'item_id':item_id};
+        var args = {'tnid':M.curTenantID, 'item_id':item_id};
         args[field] = rating;
         M.api.getJSONCb('ciniki.library.itemUpdate', args, function(rsp) {
             if( rsp.stat != 'ok' ) {

@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_library_itemUpdateReviews($ciniki, $business_id, $item_id) {
+function ciniki_library_itemUpdateReviews($ciniki, $tnid, $item_id) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -20,17 +20,17 @@ function ciniki_library_itemUpdateReviews($ciniki, $business_id, $item_id) {
     //
     // Get the existing ratings and employees
     //
-    $strsql = "SELECT ciniki_business_users.user_id, "
+    $strsql = "SELECT ciniki_tenant_users.user_id, "
         . "IFNULL(ciniki_library_reviews.id, 0) AS review_id, "
         . "IFNULL(ciniki_library_reviews.rating, 0) AS rating "
-        . "FROM ciniki_business_users "
+        . "FROM ciniki_tenant_users "
         . "LEFT JOIN ciniki_library_reviews ON ("
-            . "ciniki_business_users.user_id = ciniki_library_reviews.user_id "
+            . "ciniki_tenant_users.user_id = ciniki_library_reviews.user_id "
             . "AND ciniki_library_reviews.item_id = '" . ciniki_core_dbQuote($ciniki, $item_id) . "' "
-            . "AND ciniki_library_reviews.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND ciniki_library_reviews.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "AND ciniki_business_users.status = 10 "
+        . "WHERE ciniki_tenant_users.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ciniki_tenant_users.status = 10 "
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
         array('container'=>'employees', 'fname'=>'user_id',
@@ -59,7 +59,7 @@ function ciniki_library_itemUpdateReviews($ciniki, $business_id, $item_id) {
             // Update the review member
             //
             if( $user['review_id'] > 0 ) {
-                $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.library.review', $user['review_id'], $args, 0x04);
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.library.review', $user['review_id'], $args, 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }
@@ -69,7 +69,7 @@ function ciniki_library_itemUpdateReviews($ciniki, $business_id, $item_id) {
                 if( !isset($args['review']) ) {
                     $args['review'] = '';
                 }
-                $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.library.review', $args, 0x04);
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.library.review', $args, 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }

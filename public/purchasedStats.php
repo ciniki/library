@@ -12,7 +12,7 @@ function ciniki_library_purchasedStats($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'item_type'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Item Type'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -22,16 +22,16 @@ function ciniki_library_purchasedStats($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.purchasedStats'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['tnid'], 'ciniki.library.purchasedStats'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -46,13 +46,13 @@ function ciniki_library_purchasedStats($ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki);
 
     //
-    // Get the number of faqs in each status for the business, 
+    // Get the number of faqs in each status for the tenant, 
     // if no rows found, then return empty array
     //
     $strsql = "SELECT purchased_place AS name, "
         . "SUM(purchased_price) AS total_amount "
         . "FROM ciniki_library_items "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND purchased_place <> '' "
         . "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
         . "AND (flags&0x01) = 1 "

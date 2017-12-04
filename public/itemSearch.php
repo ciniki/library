@@ -12,7 +12,7 @@ function ciniki_library_itemSearch($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'start_needle'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Search String'), 
         'flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Options'), 
         'limit'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Limit'), 
@@ -24,19 +24,19 @@ function ciniki_library_itemSearch($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.itemSearch'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['tnid'], 'ciniki.library.itemSearch'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // Get the number of faqs in each status for the business, 
+    // Get the number of faqs in each status for the tenant, 
     // if no rows found, then return empty array
     //
-    if( ($ciniki['business']['modules']['ciniki.library']['flags']&0x08) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.library']['flags']&0x08) > 0 ) {
         //
         // Ratings included
         //
@@ -53,9 +53,9 @@ function ciniki_library_itemSearch($ciniki) {
             . "FROM ciniki_library_items "
             . "LEFT JOIN ciniki_library_reviews ON ("
                 . "ciniki_library_items.id = ciniki_library_reviews.item_id "
-                . "AND ciniki_library_reviews.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_library_reviews.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND (title LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR title LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR author_display LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
@@ -90,7 +90,7 @@ function ciniki_library_itemSearch($ciniki) {
             . "IF(flags&0x01>0, 'yes', 'no') AS owned, "
             . "IF(flags&0x02>0, 'yes', 'no') AS wanted "
             . "FROM ciniki_library_items "
-            . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND (title LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR title LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
                 . "OR author_display LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "

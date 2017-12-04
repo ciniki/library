@@ -8,8 +8,8 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:     The ID of the business to add the item to.  The user must
-//                  an owner of the business.
+// tnid:     The ID of the tenant to add the item to.  The user must
+//                  an owner of the tenant.
 //
 // 
 // Returns
@@ -22,7 +22,7 @@ function ciniki_library_itemAdd(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'item_type'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Item Type'), 
         'item_format'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Format'),
         'title'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Title'), 
@@ -56,10 +56,10 @@ function ciniki_library_itemAdd(&$ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.itemAdd'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['tnid'], 'ciniki.library.itemAdd'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -68,7 +68,7 @@ function ciniki_library_itemAdd(&$ciniki) {
     // Check the permalink doesn't already exist, for the item type
     //
     $strsql = "SELECT id, title, permalink FROM ciniki_library_items "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND item_type = '" . ciniki_core_dbQuote($ciniki, $args['item_type']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "";
@@ -96,7 +96,7 @@ function ciniki_library_itemAdd(&$ciniki) {
     // Add the item
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.library.item', $args);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.library.item', $args);
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
@@ -107,7 +107,7 @@ function ciniki_library_itemAdd(&$ciniki) {
     //
     if( isset($args['genres']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
-        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.library', 'tag', $args['business_id'],
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.library', 'tag', $args['tnid'],
             'ciniki_library_tags', 'ciniki_library_history',
             'item_id', $item_id, 20, $args['genres']);
         if( $rc['stat'] != 'ok' ) {
@@ -121,7 +121,7 @@ function ciniki_library_itemAdd(&$ciniki) {
     //
     if( isset($args['tags']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
-        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.library', 'tag', $args['business_id'],
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.library', 'tag', $args['tnid'],
             'ciniki_library_tags', 'ciniki_library_history',
             'item_id', $item_id, 40, $args['tags']);
         if( $rc['stat'] != 'ok' ) {
@@ -133,9 +133,9 @@ function ciniki_library_itemAdd(&$ciniki) {
     //
     // Update the reviews/ratings
     //
-    if( ($ciniki['business']['modules']['ciniki.library']['flags']&0x08) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.library']['flags']&0x08) > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'itemUpdateReviews');
-        $rc = ciniki_library_itemUpdateReviews($ciniki, $args['business_id'], $item_id);
+        $rc = ciniki_library_itemUpdateReviews($ciniki, $args['tnid'], $item_id);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.library');
             return $rc;
@@ -151,11 +151,11 @@ function ciniki_library_itemAdd(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'library');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'library');
 
     return array('stat'=>'ok', 'id'=>$item_id);
 }

@@ -12,7 +12,7 @@ function ciniki_library_itemStats($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         )); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -21,10 +21,10 @@ function ciniki_library_itemStats($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.itemStats'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['tnid'], 'ciniki.library.itemStats'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -55,9 +55,9 @@ function ciniki_library_itemStats($ciniki) {
         . "FROM ciniki_library_items "
         . "LEFT JOIN ciniki_library_tags ON ("
             . "ciniki_library_items.id = ciniki_library_tags.item_id "
-            . "AND ciniki_library_tags.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND ciniki_library_tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND (ciniki_library_items.flags&0x01) = 1 "
         . "GROUP BY item_type, tag_type, tag_name "
         . "";
@@ -88,7 +88,7 @@ function ciniki_library_itemStats($ciniki) {
             . "ciniki_library_items.id = ciniki_library_tags.item_id "
             . "AND ciniki_library_tags.tag_type = 20 "
             . ") "
-        . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND (ciniki_library_items.flags&0x01) = 1 "
         . "AND ISNULL(tag_name) "
         . "GROUP BY item_type "
@@ -130,7 +130,7 @@ function ciniki_library_itemStats($ciniki) {
     //
     $strsql = "SELECT item_type, item_format, item_format AS item_format_text, COUNT(item_format) AS num_items "
         . "FROM ciniki_library_items "
-        . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_library_items.flags&0x01 = 1 "
         . "GROUP BY item_type, item_format "
         . "ORDER BY item_type, item_format "
@@ -162,7 +162,7 @@ function ciniki_library_itemStats($ciniki) {
     //
     $strsql = "SELECT item_type, location AS name, COUNT(location) AS num_items "
         . "FROM ciniki_library_items "
-        . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND (ciniki_library_items.flags&0x01) = 1 "
         . "GROUP BY item_type, location "
         . "ORDER BY item_type, location "
@@ -193,7 +193,7 @@ function ciniki_library_itemStats($ciniki) {
     //
     $strsql = "SELECT item_type, purchased_place, COUNT(purchased_place) AS num_items "
         . "FROM ciniki_library_items "
-        . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND (ciniki_library_items.flags&0x01) = 1 "
         . "AND purchased_place <> '' "
         . "GROUP BY item_type, purchased_place "
@@ -225,7 +225,7 @@ function ciniki_library_itemStats($ciniki) {
     //
     $strsql = "SELECT item_type, COUNT(id) AS num_items "
         . "FROM ciniki_library_items "
-        . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND (ciniki_library_items.flags&0x02) = 2 "
         . "GROUP BY item_type "
         . "ORDER BY item_type "

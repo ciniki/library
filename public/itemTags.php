@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the item from.
+// tnid:         The ID of the tenant to get the item from.
 // 
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_library_itemTags($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'item_type'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Item Type'),
         )); 
     if( $rc['stat'] != 'ok' ) { 
@@ -29,10 +29,10 @@ function ciniki_library_itemTags($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.itemTags'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['tnid'], 'ciniki.library.itemTags'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
@@ -42,7 +42,7 @@ function ciniki_library_itemTags($ciniki) {
     // Load the tags
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'loadTags');
-    $rc = ciniki_library_loadTags($ciniki, $args['business_id'], $args['item_type']);
+    $rc = ciniki_library_loadTags($ciniki, $args['tnid'], $args['item_type']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

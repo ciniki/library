@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to get the item from.
+// tnid:         The ID of the tenant to get the item from.
 // item_id:         The ID of the item to get.
 // 
 // Returns
@@ -20,7 +20,7 @@ function ciniki_library_itemGet($ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'item_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Item'), 
         'images'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Images'),
         'tags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Tags'),
@@ -32,16 +32,16 @@ function ciniki_library_itemGet($ciniki) {
     
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'checkAccess');
-    $rc = ciniki_library_checkAccess($ciniki, $args['business_id'], 'ciniki.library.itemGet'); 
+    $rc = ciniki_library_checkAccess($ciniki, $args['tnid'], 'ciniki.library.itemGet'); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -75,7 +75,7 @@ function ciniki_library_itemGet($ciniki) {
         . "ciniki_library_items.purchased_price, "
         . "ciniki_library_items.purchased_place "
         . "FROM ciniki_library_items "
-        . "WHERE ciniki_library_items.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_library_items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_library_items.id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
         . "";
 
@@ -102,21 +102,21 @@ function ciniki_library_itemGet($ciniki) {
     //
     // Get the ratings for the item
     //
-    if( ($ciniki['business']['modules']['ciniki.library']['flags']&0x08) > 0 ) {
+    if( ($ciniki['tenant']['modules']['ciniki.library']['flags']&0x08) > 0 ) {
         //
         // Get the existing ratings and employees
         //
-        $strsql = "SELECT ciniki_business_users.user_id, "
+        $strsql = "SELECT ciniki_tenant_users.user_id, "
             . "IFNULL(ciniki_library_reviews.id, 0) AS review_id, "
             . "IFNULL(ciniki_library_reviews.rating, 0) AS rating "
-            . "FROM ciniki_business_users "
+            . "FROM ciniki_tenant_users "
             . "LEFT JOIN ciniki_library_reviews ON ("
-                . "ciniki_business_users.user_id = ciniki_library_reviews.user_id "
+                . "ciniki_tenant_users.user_id = ciniki_library_reviews.user_id "
                 . "AND ciniki_library_reviews.item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
-                . "AND ciniki_library_reviews.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "AND ciniki_library_reviews.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ciniki_business_users.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-            . "AND ciniki_business_users.status = 10 "
+            . "WHERE ciniki_tenant_users.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND ciniki_tenant_users.status = 10 "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.customers', array(
@@ -139,7 +139,7 @@ function ciniki_library_itemGet($ciniki) {
     $strsql = "SELECT tag_type, tag_name AS lists "
         . "FROM ciniki_library_tags "
         . "WHERE item_id = '" . ciniki_core_dbQuote($ciniki, $args['item_id']) . "' "
-        . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY tag_type, tag_name "
         . "";
     $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.library', array(
@@ -170,7 +170,7 @@ function ciniki_library_itemGet($ciniki) {
         // Load the tags
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'library', 'private', 'loadTags');
-        $rc = ciniki_library_loadTags($ciniki, $args['business_id'], $item['item_type']);
+        $rc = ciniki_library_loadTags($ciniki, $args['tnid'], $item['item_type']);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
